@@ -6,4 +6,4 @@ router.get('/', function (req, res, next) {
     res.json({ success: true });
 });
 
-module.exports = router;
+module.exports = router; 
