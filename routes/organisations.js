@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const organisation = require('../models/organisation');
+
 /**
  *  @swagger
  *  /api/organisations:
@@ -11,7 +13,7 @@ const router = express.Router();
  *                  description: A list of organisations
  */
 router.get('/', function (req, res, next) {
-    res.json({ success: true });
+    organisation.getAllOrganisations().then(orgs => { res.json(orgs) });
 });
 
-module.exports = router; 
+module.exports = router;

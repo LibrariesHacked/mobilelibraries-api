@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/LibrariesHacked/mobilelibraries-api#readme",
   "dependencies": {
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "pg": "^7.9.0",
     "swagger-jsdoc": "^3.2.8",
     "swagger-ui-express": "^4.0.2"
   }
