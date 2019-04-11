@@ -4,7 +4,8 @@
   "description": "This is an API to expose mobile library data",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "quick-build": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "pg": "^7.9.0",
     "swagger-jsdoc": "^3.2.8",
     "swagger-ui-express": "^4.0.2"
+  },
+  "engines": {
+    "node": "10.15.3"
   }
 }
