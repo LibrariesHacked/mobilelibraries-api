@@ -6,14 +6,54 @@ const organisation = require('../models/organisation');
 /**
  *  @swagger
  *  /api/organisations:
+ *      summary: All mobile library organisations
  *      get:
+ *          tags:
+ *              -   organisations
+ *          produces:
+ *              -   application/json
  *          description: Return all organisations
  *          responses: 
  *              200:
  *                  description: A list of organisations
  */
 router.get('/', function (req, res, next) {
-    organisation.getAllOrganisations().then(orgs => { res.json(orgs) });
+    organisation.getOrganisations().then(orgs => { res.json(orgs) });
+});
+
+/**
+ *  @swagger
+ *  /api/organisations/{id}:
+ *      summary: A mobile library organisation
+ *      get:
+ *          tags:
+ *              -   organisations
+ *          description: Return an organisation
+ *          produces:
+ *              -   application/json
+ *          parameters:
+ *              -   name: id
+ *                  description: Numeric ID of the organisation
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses: 
+ *              200:
+ *                  description: An organisation
+ *              404:
+ *                  description: Not found
+ */
+router.get('/:id', function (req, res, next) {
+    organisation.getOrganisationById(req.params.id)
+        .then(org => {
+            if (org != null) {
+                res.json(org);
+            } else {
+                res.status(404).json({
+                    "errors": [{ "status": "404", "title": "Not Found" }]
+                });
+            }
+        });
 });
 
 module.exports = router;
