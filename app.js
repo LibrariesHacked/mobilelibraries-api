@@ -28,6 +28,7 @@ const swaggerOptions = {
 
 // Routes
 const organisations = require('./routes/organisations');
+const mobiles = require('./routes/mobiles');
 
 // Set port to be 8080 for development, or the process environment for production/dev.
 const port = process.env.PORT || 8080;
@@ -45,6 +46,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // API routes
 app.use('/api/organisations', organisations);
+app.use('/api/mobiles', mobiles);
 
 // Swagger documentation endpoint
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));

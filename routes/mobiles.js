@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { check, validationResult } = require('express-validator/check');
 
 const mobile = require('../models/mobile');
 
@@ -10,6 +11,7 @@ const mobile = require('../models/mobile');
  *      get:
  *          tags:
  *              -   mobiles
+ *          description: Return all mobiles
  *          produces:
  *              -   application/json
  *          parameters:
@@ -18,12 +20,11 @@ const mobile = require('../models/mobile');
  *                  in: query
  *                  required: false
  *                  type: integer
- *          description: Return all mobiles
  *          responses: 
  *              200:
  *                  description: A list of mobiles
  */
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
     mobile.getMobiles().then(mobiles => { res.json(mobiles) });
 });
 
@@ -34,7 +35,7 @@ router.get('/', function (req, res, next) {
  *      get:
  *          tags:
  *              -   mobiles
- *          description: Return a mobile
+ *          description: Returns a mobile library
  *          produces:
  *              -   application/json
  *          parameters:
@@ -49,17 +50,37 @@ router.get('/', function (req, res, next) {
  *              404:
  *                  description: Not found
  */
-router.get('/:id', function (req, res, next) {
+router.get('/:id', (req, res) => {
     mobile.getMobileById(req.params.id)
         .then(org => {
             if (org != null) {
                 res.json(org);
             } else {
                 res.status(404).json({
-                    "errors": [{ "status": "404", "title": "Not Found" }]
+                    "errors": [{ status: "404", title: "Not Found" }]
                 });
             }
         });
 });
+
+router.post('/', [
+    check('organisation_id').isInt(),
+    check('mobile_name').isAlphanumeric()],
+    (req, res) => {
+        // If validation errors then return
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
+        }
+
+        const mobile = {
+            organisation_id: req.body.organisation_id,
+            mobile_name: req.body.mobile_name
+        };
+
+        // Create the mobile
+        res.json(201).json({});
+    }
+);
 
 module.exports = router;
