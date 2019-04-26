@@ -3,7 +3,7 @@ const pool = require('../helpers/database');
 // Get mobiles: 
 module.exports.getMobiles = async (organisation_id) => {
     let mobiles = [];
-    let query = 'select id, mobile_name from mobile';
+    let query = 'select id, name from mobile';
     if (organisation_id) query += ' where organisation_id = ';
     try {
         const { rows } = await pool.query(query, [organisation_id]);
