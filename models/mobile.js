@@ -1,10 +1,22 @@
 const pool = require('../helpers/database');
 
 // Get mobiles: 
-module.exports.getMobiles = async (organisation_id) => {
+module.exports.getMobiles = async () => {
     let mobiles = [];
     let query = 'select id, name from mobile';
-    if (organisation_id) query += ' where organisation_id = ';
+    try {
+        const { rows } = await pool.query(query);
+        mobiles = rows;
+    } catch (e) { 
+        console.log(e);
+    }
+    return mobiles;
+}
+
+// Get mobiles: 
+module.exports.getMobilesByOrganisationId = async (organisation_id) => {
+    let mobiles = [];
+    let query = 'select id, name from mobile where organisation_id = $';
     try {
         const { rows } = await pool.query(query, [organisation_id]);
         mobiles = rows;
@@ -16,7 +28,7 @@ module.exports.getMobiles = async (organisation_id) => {
 module.exports.getMobileById = async (id) => {
     let mobile = null;
     try {
-        const { rows } = await pool.query('SELECT id, mobile_name FROM mobile where id = $1', [id]);
+        const { rows } = await pool.query('SELECT id, name FROM mobile where id = $1', [id]);
         if (rows.length > 0) mobile = rows[0];
     } catch (e) { }
     return mobile;
@@ -25,7 +37,7 @@ module.exports.getMobileById = async (id) => {
 // Add mobile
 module.exports.addMobile = async (mobile) => {
     try {
-        const { rows } = await pool.query('insert organisation_id, mobile_name into mobile', [mobile.organisation_id, mobile.mobile_name]);
+        const { rows } = await pool.query('insert organisation_id, name into mobile', [mobile.organisation_id, mobile.mobile_name]);
     } catch (e) { }
     return mobile;
 }

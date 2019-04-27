@@ -25,7 +25,9 @@ const mobile = require('../models/mobile');
  *                  description: A list of mobiles
  */
 router.get('/', (req, res) => {
-    mobile.getMobiles().then(mobiles => { res.json(mobiles) });
+    mobile.getMobiles().then(mobiles => {
+        res.json(mobiles) 
+    });
 });
 
 /**
