@@ -65,9 +65,9 @@ router.get('/:id', (req, res) => {
         });
 });
 
-router.post('/', [
-    check('organisation_id').isInt(),
-    check('mobile_name').isAlphanumeric()],
+router.post('/', 
+    [check('organisation_id').isInt(), // Validator middleware
+    check('name').isAlphanumeric()],
     (req, res) => {
         // If validation errors then return
         const errors = validationResult(req);

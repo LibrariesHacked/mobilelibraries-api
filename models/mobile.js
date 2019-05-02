@@ -3,22 +3,21 @@ const pool = require('../helpers/database');
 // Get mobiles: 
 module.exports.getMobiles = async () => {
     let mobiles = [];
-    let query = 'select id, name from mobile';
+    const query = 'select * from vw_mobiles';
     try {
         const { rows } = await pool.query(query);
         mobiles = rows;
-    } catch (e) { 
-        console.log(e);
-    }
+    } catch (e) { }
     return mobiles;
 }
 
 // Get mobiles: 
 module.exports.getMobilesByOrganisationId = async (organisation_id) => {
     let mobiles = [];
-    let query = 'select id, name from mobile where organisation_id = $';
     try {
-        const { rows } = await pool.query(query, [organisation_id]);
+        const query = 'select * from w_mobiles where organisation_id = $';
+        const params = [organisation_id];
+        const { rows } = await pool.query(query, params);
         mobiles = rows;
     } catch (e) { }
     return mobiles;
@@ -28,7 +27,9 @@ module.exports.getMobilesByOrganisationId = async (organisation_id) => {
 module.exports.getMobileById = async (id) => {
     let mobile = null;
     try {
-        const { rows } = await pool.query('SELECT id, name FROM mobile where id = $1', [id]);
+        const query = 'select * from vw_mobiles where id = $1';
+        const params = [id];
+        const { rows } = await pool.query(query, params);
         if (rows.length > 0) mobile = rows[0];
     } catch (e) { }
     return mobile;
@@ -37,7 +38,26 @@ module.exports.getMobileById = async (id) => {
 // Add mobile
 module.exports.addMobile = async (mobile) => {
     try {
-        const { rows } = await pool.query('insert organisation_id, name into mobile', [mobile.organisation_id, mobile.mobile_name]);
+        const query = 'insert into mobile (name, organisation_id) values($1, $2)';
+        const params = [
+            mobile.name,
+            mobile.organisation_id
+        ]
+        const { rows } = await pool.query(query, params);
+    } catch (e) { }
+    return mobile;
+}
+
+// Add mobile
+module.exports.editMobile = async (mobile) => {
+    try {
+        const query = 'update mobile set name = $2, organisation_id = $3 where id = $1';
+        const params = [
+            mobile.id,
+            mobile.name,
+            mobile.organisation_id
+        ]
+        const { rows } = await pool.query(query, params);
     } catch (e) { }
     return mobile;
 }
