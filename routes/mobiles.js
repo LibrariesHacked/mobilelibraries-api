@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator/check');
 
-const mobile = require('../models/mobile');
+const mobileModel = require('../models/mobile');
 
 /**
  *  @swagger
@@ -25,9 +25,12 @@ const mobile = require('../models/mobile');
  *                  description: A list of mobiles
  */
 router.get('/', (req, res) => {
-    mobile.getMobiles().then(mobiles => {
-        res.json(mobiles) 
-    });
+    // There may be an organisation ID
+    if (req.query.organisation_id) {
+        mobileModel.getMobilesByOrganisationId(req.query.organisation_id).then(mobiles => res.json(mobiles));
+    } else {
+        mobileModel.getMobiles().then(mobiles => res.json(mobiles));
+    }
 });
 
 /**
@@ -53,10 +56,10 @@ router.get('/', (req, res) => {
  *                  description: Not found
  */
 router.get('/:id', (req, res) => {
-    mobile.getMobileById(req.params.id)
-        .then(org => {
-            if (org != null) {
-                res.json(org);
+    mobileModel.getMobileById(req.params.id)
+        .then(mob => {
+            if (mob != null) {
+                res.json(mob);
             } else {
                 res.status(404).json({
                     "errors": [{ status: "404", title: "Not Found" }]
@@ -65,23 +68,96 @@ router.get('/:id', (req, res) => {
         });
 });
 
-router.post('/', 
-    [check('organisation_id').isInt(), // Validator middleware
-    check('name').isAlphanumeric()],
+/**
+ *  @swagger
+ *  /api/mobiles:
+ *      summary: Create a mobile library
+ *      post:
+ *          tags:
+ *              -   mobiles
+ *          description: Create a new mobile library
+ *          produces:
+ *              -   application/json
+ *          parameters:
+ *              -   name: mobile
+ *                  in: body
+ *                  description: The mobile to create.
+ *                  schema:
+ *                      type: object
+ *                  required:
+ *                      - name
+ *                      - organisation_id
+ *                  properties:
+ *                      name:
+ *                          type: string
+ *                      organisation_id:
+ *                          type: integer
+ *                      timetable:
+ *                          type: string
+ *          responses: 
+ *              201:
+ *                  description: Mobile added
+ *              422:
+ *                  description: Validation error
+ */
+router.post('/',
+    [check('organisation_id').isInt(), check('name').isAlphanumeric()],
     (req, res) => {
-        // If validation errors then return
         const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
-        }
-
+        if (!errors.isEmpty()) return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
         const mobile = {
             organisation_id: req.body.organisation_id,
-            mobile_name: req.body.mobile_name
+            name: req.body.name,
+            timetable: req.body.timetable
         };
+        mobileModel.createMobile(mobile).then(mobile => res.status(201).json({ mobile }));
+    }
+);
 
-        // Create the mobile
-        res.json(201).json({});
+/**
+ *  @swagger
+ *  /api/mobiles:
+ *      summary: Update a mobile library
+ *      put:
+ *          tags:
+ *              -   mobiles
+ *          description: Update a mobile library
+ *          produces:
+ *              -   application/json
+ *          parameters:
+ *              -   name: mobile
+ *                  in: body
+ *                  description: The mobile to update.
+ *                  schema:
+ *                      type: object
+ *                  required:
+ *                      - id
+ *                  properties:
+ *                      id:
+ *                          type: integer
+ *                      name:
+ *                          type: string
+ *                      organisation_id:
+ *                          type: integer
+ *                      timetable:
+ *                          type: string
+ *          responses: 
+ *              200:
+ *                  description: Mobile updated
+ *              422:
+ *                  description: Validation error
+ */
+router.put('/',
+    [check('id').isInt()],
+    (req, res) => {
+        const id = req.body.id;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
+        const keys = ['name', 'organisation_id', 'timetable'];
+        let mobile = req.body;
+        // Filter out any unrequired stuff
+        Object.keys(mobile).filter(key => !keys.includes(key)).forEach(key => delete mobile[key]);
+        mobileModel.updateMobile(id, mobile).then(mobile => res.status(200).json({ mobile }));
     }
 );
 

@@ -15,7 +15,7 @@ module.exports.getMobiles = async () => {
 module.exports.getMobilesByOrganisationId = async (organisation_id) => {
     let mobiles = [];
     try {
-        const query = 'select * from w_mobiles where organisation_id = $';
+        const query = 'select * from vw_mobiles where organisation_id = $1';
         const params = [organisation_id];
         const { rows } = await pool.query(query, params);
         mobiles = rows;
@@ -35,28 +35,33 @@ module.exports.getMobileById = async (id) => {
     return mobile;
 }
 
-// Add mobile
-module.exports.addMobile = async (mobile) => {
+// Create mobile
+module.exports.createMobile = async (mobile) => {
     try {
-        const query = 'insert into mobile (name, organisation_id) values($1, $2)';
+        const query = 'insert into mobile (organisation_id, name, timetable) values($1, $2, $3)';
         const params = [
+            mobile.organisation_id,
             mobile.name,
-            mobile.organisation_id
+            mobile.timetable
         ]
         const { rows } = await pool.query(query, params);
-    } catch (e) { }
+    } catch (e) {
+    }
     return mobile;
 }
 
-// Add mobile
-module.exports.editMobile = async (mobile) => {
+// Update mobile
+module.exports.updateMobile = async (id, mobile) => {
+    let sets = [];
+    let params = [id];
+    Object.keys(mobile).forEach(key => {
+        if (['organisation_id', 'name', 'timetable'].indexOf(key) !== -1) {
+            params.push(mobile[key]);
+            sets.push(key + '=' + '$' + (params.length));
+        }
+    });
     try {
-        const query = 'update mobile set name = $2, organisation_id = $3 where id = $1';
-        const params = [
-            mobile.id,
-            mobile.name,
-            mobile.organisation_id
-        ]
+        const query = 'update mobile set ' + sets.join(',') + ' where id = $1';
         const { rows } = await pool.query(query, params);
     } catch (e) { }
     return mobile;

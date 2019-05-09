@@ -49,7 +49,7 @@ app.use('/api/organisations', organisations);
 app.use('/api/mobiles', mobiles);
 
 // Swagger documentation endpoint
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
+app.use('/', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
 
 // Listen for requests
 app.listen(port);

@@ -4,7 +4,7 @@ const pool = require('../helpers/database');
 module.exports.getOrganisations = async () => {
     let organisations = [];
     try {
-        const { rows } = await pool.query('SELECT id, name FROM organisation');
+        const { rows } = await pool.query('SELECT id, code, name, timetable, website, email, number_mobiles, number_routes, number_stops FROM vw_organisations');
         organisations = rows;
     } catch (e) { }
     return organisations;
@@ -14,7 +14,7 @@ module.exports.getOrganisations = async () => {
 module.exports.getOrganisationById = async (id) => {
     let organisation = null;
     try {
-        const { rows } = await pool.query('SELECT id, name FROM organisation where id = $1', [id]);
+        const { rows } = await pool.query('SELECT id, code, name, timetable, website, email, number_mobiles, number_routes, number_stops FROM vw_organisations where id = $1', [id]);
         if (rows.length > 0) organisation = rows[0];
     } catch (e) { }
     return organisation;
