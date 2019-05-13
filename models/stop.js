@@ -6,7 +6,7 @@ module.exports.getTileData = async (x, y, z) => {
     let tile = null;
     try {
         const { rows } = await pool.query(query, [x, y, z]);
-        if (rows.length > 0) tile = rows[0];
+        if (rows && rows.length > 0 && rows[0].fn_stops_mvt) tile = rows[0].fn_stops_mvt;
     } catch (e) { }
     return tile;
 }
