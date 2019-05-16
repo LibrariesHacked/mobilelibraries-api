@@ -6,6 +6,24 @@ const stopModel = require('../models/stop');
 
 /**
  *  @swagger
+ *  /api/stops:
+ *      summary: All mobile library stops
+ *      get:
+ *          tags:
+ *              -   stops
+ *          produces:
+ *              -   application/json
+ *          description: Return all stops
+ *          responses: 
+ *              200:
+ *                  description: A list of stops
+ */
+router.get('/', function (req, res, next) {
+    stopModel.getStops().then(stops => { res.json(stops) });
+});
+
+/**
+ *  @swagger
  *  /api/stops/{z}/{x}/{y}.mvt:
  *      summary: Vector tile service for mobile library stops
  *      get:
