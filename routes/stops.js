@@ -34,8 +34,9 @@ router.get('/', function (req, res, next) {
 
     stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => {
 		// We are going to set content headers to set the paging values
-		res.header('X-Total-Count', stops.length > 0 ? stops[0].total : 0);
-		res.header('X-Page', page);
+		res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page');
+		res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0);
+		res.setHeader('X-Page', page);
 		stops = stops.map(({ total, ...stop }) => stop); // Remove total column
 		res.json(stops); 
 	});
