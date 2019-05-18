@@ -19,7 +19,20 @@ const stopModel = require('../models/stop');
  *                  description: A list of stops
  */
 router.get('/', function (req, res, next) {
-    stopModel.getStops().then(stops => { res.json(stops) });
+
+	// Paging parameters
+	const limit = req.query.limit || 1000;
+	const page = req.query.page || 1;
+
+	// Sorting parameters
+	const sort = req.query.sort || 'id';
+
+	// Filtering parameters
+	const organisation_id = req.query.organisation_id || null;
+	const mobile_id = req.query.mobile_id || null;
+	const route_id = req.query.route_id || null;
+
+    stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => { res.json(stops) });
 });
 
 /**
