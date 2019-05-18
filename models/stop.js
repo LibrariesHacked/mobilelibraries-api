@@ -33,13 +33,14 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
 
         params = params.map(p => p[1]); // Change params array just to values.
 
-        const query = 'select ' + fields.join(', ') + ' from vw_stops '
-            + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
-            + orderby_query
-            + limit_query
-            + offset_query;
+        const query = 'select ' + fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
+        + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
+        + orderby_query
+        + limit_query
+        + offset_query;
 
         const { rows } = await pool.query(query, params);
+
         stops = rows;
     } catch (e) { }
     return stops;

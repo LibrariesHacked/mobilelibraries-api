@@ -32,7 +32,13 @@ router.get('/', function (req, res, next) {
 	const mobile_id = req.query.mobile_id || null;
 	const route_id = req.query.route_id || null;
 
-    stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => { res.json(stops) });
+    stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => {
+		// We are going to set content headers to set the paging values
+		res.header('X-Total-Count', stops.length > 0 ? stops[0].total : 0);
+		res.header('X-Page', page);
+		stops = stops.map(({ total, ...stop }) => stop); // Remove total column
+		res.json(stops); 
+	});
 });
 
 /**
