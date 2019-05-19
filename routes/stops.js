@@ -14,32 +14,92 @@ const stopModel = require('../models/stop');
  *          produces:
  *              -   application/json
  *          description: Return all stops
+ *          parameters:
+ *              -   name: organisation_id
+ *                  description: Numeric ID of the organisation
+ *                  in: query
+ *                  required: false
+ *                  type: integer
+ *              -   name: mobile_id
+ *                  description: Numeric ID of the mobile
+ *                  in: query
+ *                  required: false
+ *                  type: integer
+ *              -   name: route_id
+ *                  description: Numeric ID of the route
+ *                  in: query
+ *                  required: false
+ *                  type: integer
+ *              -   name: limit
+ *                  description: Number of results to return
+ *                  in: query
+ *                  required: false
+ *                  type: integer
+ *              -   name: page
+ *                  description: The page to return (for paged results)
+ *                  in: query
+ *                  required: false
+ *                  type: integer
+ *              -   name: sort
+ *                  description: The column to sort by
+ *                  in: query
+ *                  required: false
+ *                  type: integer
  *          responses: 
  *              200:
  *                  description: A list of stops
  */
 router.get('/', function (req, res, next) {
 
-	// Paging parameters
-	const limit = req.query.limit || 1000;
-	const page = req.query.page || 1;
-
-	// Sorting parameters
-	const sort = req.query.sort || 'id';
-
-	// Filtering parameters
+	// Parameters
 	const organisation_id = req.query.organisation_id || null;
 	const mobile_id = req.query.mobile_id || null;
 	const route_id = req.query.route_id || null;
+	const limit = req.query.limit || 1000;
+	const page = req.query.page || 1;
+	const sort = req.query.sort || 'id';
 
-    stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => {
+	stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => {
 		// We are going to set content headers to set the paging values
 		res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page');
 		res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0);
 		res.setHeader('X-Page', page);
 		stops = stops.map(({ total, ...stop }) => stop); // Remove total column
-		res.json(stops); 
+		res.json(stops);
 	});
+});
+
+/**
+ *  @swagger
+ *  /api/stops/{id}:
+ *      summary: A mobile library stop
+ *      get:
+ *          tags:
+ *              -   stops
+ *          description: Returns a mobile library stop
+ *          produces:
+ *              -   application/json
+ *          parameters:
+ *              -   name: id
+ *                  description: Numeric ID of the stop
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses: 
+ *              200:
+ *                  description: A mobile library stop
+ *              404:
+ *                  description: Not found
+ */
+router.get('/:id', function (req, res, next) {
+
+	stopModel.getStopById(req.params.id)
+		.then(stop => {
+			if (stop != null) return res.json(stop);
+			res.status(404).json({
+				"errors": [{ "status": "404", "title": "Not Found" }]
+			});
+		});
 });
 
 /**

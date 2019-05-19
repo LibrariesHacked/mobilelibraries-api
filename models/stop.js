@@ -1,5 +1,5 @@
 const pool = require('../helpers/database');
-
+const fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
 // Get Stops: 
 module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, page, sort) => {
@@ -27,23 +27,32 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
             }
         });
 
-        const fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
-        
         if (fields.indexOf(sort) !== -1) orderby_query = 'order by ' + sort + ' asc ';
 
         params = params.map(p => p[1]); // Change params array just to values.
 
         const query = 'select ' + fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
-        + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
-        + orderby_query
-        + limit_query
-        + offset_query;
+            + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
+            + orderby_query
+            + limit_query
+            + offset_query;
 
         const { rows } = await pool.query(query, params);
 
         stops = rows;
     } catch (e) { }
     return stops;
+}
+
+// Get Stop By ID: 
+module.exports.getStopById = async (id) => {
+    let stop = null;
+    try {
+        const query = 'select ' + fields.join(', ') + ' ' + 'from vw_stops where id = $1'
+        const { rows } = await pool.query(query, [id]);
+        if (rows.length > 0) stop = rows[0];
+    } catch (e) { }
+    return stop;
 }
 
 // Get tile data
