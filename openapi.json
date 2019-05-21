@@ -1,0 +1,312 @@
+{
+	"info": {
+		"title": "Mobile Libraries API",
+		"version": "1.0.0",
+		"description": "API to retrieve data about mobile library stops and timetables.",
+		"contact": {
+			"name": "Libraries Hacked",
+			"url": "https://www.librarieshacked.org",
+			"email": "info@librarieshacked.org"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/api/mobiles": {
+			"summary": "Update a mobile library",
+			"get": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Return all mobiles",
+				"parameters": [
+					{
+						"name": "organisation_id",
+						"description": "Numeric ID of the organisation the mobile is run by",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of mobiles"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Create a new mobile library",
+				"responses": {
+					"201": {
+						"description": "Mobile added"
+					},
+					"422": {
+						"description": "Validation error"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Update a mobile library",
+				"responses": {
+					"200": {
+						"description": "Mobile updated"
+					},
+					"422": {
+						"description": "Validation error"
+					}
+				}
+			}
+		},
+		"/api/mobiles/{id}": {
+			"summary": "A mobile library",
+			"get": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Returns a mobile library",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the mobile",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A mobile"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
+		"/api/organisations": {
+			"summary": "All mobile library organisations",
+			"get": {
+				"tags": [
+					"organisations"
+				],
+				"description": "Return all organisations",
+				"responses": {
+					"200": {
+						"description": "A list of organisations"
+					}
+				}
+			}
+		},
+		"/api/organisations/{id}": {
+			"summary": "A mobile library organisation",
+			"get": {
+				"tags": [
+					"organisations"
+				],
+				"description": "Return an organisation",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the organisation",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "An organisation"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
+		"/api/stops": {
+			"summary": "Update a mobile library stop",
+			"get": {
+				"tags": [
+					"stops"
+				],
+				"description": "Return all stops",
+				"parameters": [
+					{
+						"name": "organisation_id",
+						"description": "Numeric ID of the organisation",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "mobile_id",
+						"description": "Numeric ID of the mobile",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "route_id",
+						"description": "Numeric ID of the route",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "limit",
+						"description": "Number of results to return",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "page",
+						"description": "The page to return (for paged results)",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "sort",
+						"description": "The column to sort by",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of stops"
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"stops"
+				],
+				"description": "Create a new mobile library stop",
+				"responses": {
+					"201": {
+						"description": "Mobile library stop added"
+					},
+					"422": {
+						"description": "Validation error"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"stops"
+				],
+				"description": "Update a mobile library stop",
+				"responses": {
+					"200": {
+						"description": "Mobile library stop updated"
+					},
+					"422": {
+						"description": "Validation error"
+					}
+				}
+			}
+		},
+		"/api/stops/{id}": {
+			"summary": "A mobile library stop",
+			"get": {
+				"tags": [
+					"stops"
+				],
+				"description": "Returns a mobile library stop",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the stop",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A mobile library stop"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
+		"/api/stops/{z}/{x}/{y}.mvt": {
+			"summary": "Vector tile service for mobile library stops",
+			"get": {
+				"tags": [
+					"stops"
+				],
+				"description": "Return stops within an x, y and zoom level",
+				"parameters": [
+					{
+						"name": "x",
+						"description": "X coordinate",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "y",
+						"description": "Y coordinate",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "z",
+						"description": "Zoom level",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Mobile stops vector tile"
+					},
+					"204": {
+						"description": "No vector content"
+					}
+				}
+			}
+		}
+	},
+	"components": {},
+	"tags": []
+}

@@ -5,7 +5,7 @@ require('dotenv').config()
 
 // Swagger setup
 const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerDocument = require('./openapi.json');
 const swaggerJsOptions = {
 	swaggerDefinition: {
 		info: {
@@ -22,7 +22,6 @@ const swaggerJsOptions = {
 	},
 	apis: ['./routes/*.js']
 };
-const specs = swaggerJsdoc(swaggerJsOptions);
 const swaggerOptions = {
 	customCss: '.swagger-ui .topbar { display: none }'
 }
@@ -52,7 +51,7 @@ app.use('/api/mobiles', mobiles);
 app.use('/api/stops', stops);
 
 // Swagger documentation endpoint
-app.use('/', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 
 // Listen for requests
 app.listen(port);
