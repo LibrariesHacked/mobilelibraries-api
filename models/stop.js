@@ -1,5 +1,6 @@
 const pool = require('../helpers/database');
-const fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
+const view_fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
+const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
 // Get Stops: 
 module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, page, sort) => {
@@ -27,11 +28,11 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
             }
         });
 
-        if (fields.indexOf(sort) !== -1) orderby_query = 'order by ' + sort + ' asc ';
+        if (view_fields.indexOf(sort) !== -1) orderby_query = 'order by ' + sort + ' asc ';
 
         params = params.map(p => p[1]); // Change params array just to values.
 
-        const query = 'select ' + fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
+        const query = 'select ' + view_fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
             + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
             + orderby_query
             + limit_query
@@ -48,7 +49,7 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
 module.exports.getStopById = async (id) => {
     let stop = null;
     try {
-        const query = 'select ' + fields.join(', ') + ' ' + 'from vw_stops where id = $1'
+        const query = 'select ' + view_fields.join(', ') + ' ' + 'from vw_stops where id = $1'
         const { rows } = await pool.query(query, [id]);
         if (rows.length > 0) stop = rows[0];
     } catch (e) { }
@@ -64,4 +65,31 @@ module.exports.getTileData = async (x, y, z) => {
         if (rows && rows.length > 0 && rows[0].fn_stops_mvt) tile = rows[0].fn_stops_mvt;
     } catch (e) { }
     return tile;
+}
+
+// Create stop
+module.exports.createStop = async (stop) => {
+    try {
+        const query = 'insert into mobile (' + table_fields.join(', ') + ') values(' + table_fields.map((f, idx) => '$' + (idx + 1)).join(', ') + ')';
+        const params = table_fields.map((f) => stop[f] ? stop[f] : null);
+        const { rows } = await pool.query(query, params);
+    } catch (e) { }
+    return stop;
+}
+
+// Update stop
+module.exports.updateStop = async (id, stop) => {
+    let sets = [];
+    let params = [id];
+    Object.keys(stop).forEach(key => {
+        if (table_fields.indexOf(key) !== -1) {
+            params.push(stop[key]);
+            sets.push(key + '=' + '$' + (params.length));
+        }
+    });
+    try {
+        const query = 'update stop set ' + sets.join(',') + ' where id = $1';
+        const { rows } = await pool.query(query, params);
+    } catch (e) { }
+    return stop;
 }

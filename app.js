@@ -18,6 +18,7 @@ const swaggerJsOptions = {
 				email: "info@librarieshacked.org"
 			},
 		},
+		openapi: '3.0.0'
 	},
 	apis: ['./routes/*.js']
 };

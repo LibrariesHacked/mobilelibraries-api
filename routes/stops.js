@@ -11,8 +11,6 @@ const stopModel = require('../models/stop');
  *      get:
  *          tags:
  *              -   stops
- *          produces:
- *              -   application/json
  *          description: Return all stops
  *          parameters:
  *              -   name: organisation_id
@@ -77,8 +75,6 @@ router.get('/', function (req, res, next) {
  *          tags:
  *              -   stops
  *          description: Returns a mobile library stop
- *          produces:
- *              -   application/json
  *          parameters:
  *              -   name: id
  *                  description: Numeric ID of the stop
@@ -110,8 +106,6 @@ router.get('/:id', function (req, res, next) {
  *          tags:
  *              -   stops
  *          description: Return stops within an x, y and zoom level
- *          produces:
- *              -   application/x-protobuf
  *          parameters:
  *              -   name: x
  *                  description: X coordinate
@@ -142,5 +136,67 @@ router.get('/:z/:x/:y.mvt', async (req, res) => {
 		res.send(tile);
 	});
 });
+
+/**
+ *  @swagger
+ *  /api/stops:
+ *      summary: Create a mobile library stop
+ *      post:
+ *          tags:
+ *              -   stops
+ *          description: Create a new mobile library stop
+ *          responses: 
+ *              201:
+ *                  description: Mobile library stop added
+ *              422:
+ *                  description: Validation error
+ */
+router.post('/',
+	[check('organisation_id').isInt(), check('name').isAlphanumeric()],
+	(req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
+		const mobile = {
+			name: req.body.name,
+			route_id: req.body.route_id,
+			community: req.body.community,
+			address: req.body.address,
+			postcode: req.body.postcode,
+			arrival: req.body.arrival,
+			departure: req.body.departure,
+			timetable: req.body.timetable
+		};
+		mobileModel.createMobile(mobile).then(mobile => res.status(201).json({ mobile }));
+	}
+);
+
+/**
+ *  @swagger
+ *  /api/stops:
+ *      summary: Update a mobile library stop
+ *      put:
+ *          tags:
+ *              -   stops
+ *          description: Update a mobile library stop
+ *          responses: 
+ *              200:
+ *                  description: Mobile library stop updated
+ *              422:
+ *                  description: Validation error
+ */
+router.put('/',
+	[check('id').isInt()],
+	(req, res) => {
+		const id = req.body.id;
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
+		const keys = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
+		let stop = req.body;
+
+		// Filter out any unrequired stuff
+		Object.keys(stop).filter(key => !keys.includes(key)).forEach(key => delete stop[key]);
+		stopModel.updateStop(id, stop).then(stop => res.status(200).json({ stop }));
+	}
+);
 
 module.exports = router;

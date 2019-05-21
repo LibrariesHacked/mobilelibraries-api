@@ -12,8 +12,6 @@ const mobileModel = require('../models/mobile');
  *          tags:
  *              -   mobiles
  *          description: Return all mobiles
- *          produces:
- *              -   application/json
  *          parameters:
  *              -   name: organisation_id
  *                  description: Numeric ID of the organisation the mobile is run by
@@ -41,8 +39,6 @@ router.get('/', (req, res) => {
  *          tags:
  *              -   mobiles
  *          description: Returns a mobile library
- *          produces:
- *              -   application/json
  *          parameters:
  *              -   name: id
  *                  description: Numeric ID of the mobile
@@ -76,24 +72,22 @@ router.get('/:id', (req, res) => {
  *          tags:
  *              -   mobiles
  *          description: Create a new mobile library
- *          produces:
- *              -   application/json
  *          parameters:
- *              -   name: mobile
- *                  in: body
+ *              -   in: body
+ *                  name: mobile
  *                  description: The mobile to create.
  *                  schema:
  *                      type: object
- *                  required:
- *                      - name
- *                      - organisation_id
- *                  properties:
- *                      name:
- *                          type: string
- *                      organisation_id:
- *                          type: integer
- *                      timetable:
- *                          type: string
+ *                      required:
+ *                          - name
+ *                          - organisation_id
+ *                      properties:
+ *                          name:
+ *                              type: string
+ *                          organisation_id:
+ *                              type: integer
+ *                          timetable:
+ *                              type: string
  *          responses: 
  *              201:
  *                  description: Mobile added
@@ -122,25 +116,23 @@ router.post('/',
  *          tags:
  *              -   mobiles
  *          description: Update a mobile library
- *          produces:
- *              -   application/json
  *          parameters:
- *              -   name: mobile
- *                  in: body
+ *              -   in: body
+ *                  name: mobile
  *                  description: The mobile to update.
  *                  schema:
  *                      type: object
- *                  required:
- *                      - id
- *                  properties:
- *                      id:
- *                          type: integer
- *                      name:
- *                          type: string
- *                      organisation_id:
- *                          type: integer
- *                      timetable:
- *                          type: string
+ *                      required:
+ *                          - id
+ *                      properties:
+ *                          id:
+ *                              type: integer
+ *                          name:
+ *                              type: string
+ *                          organisation_id:
+ *                              type: integer
+ *                          timetable:
+ *                              type: string
  *          responses: 
  *              200:
  *                  description: Mobile updated

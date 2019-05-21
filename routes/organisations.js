@@ -10,8 +10,6 @@ const organisation = require('../models/organisation');
  *      get:
  *          tags:
  *              -   organisations
- *          produces:
- *              -   application/json
  *          description: Return all organisations
  *          responses: 
  *              200:
@@ -29,8 +27,6 @@ router.get('/', function (req, res, next) {
  *          tags:
  *              -   organisations
  *          description: Return an organisation
- *          produces:
- *              -   application/json
  *          parameters:
  *              -   name: id
  *                  description: Numeric ID of the organisation
