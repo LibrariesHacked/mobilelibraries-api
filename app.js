@@ -29,6 +29,7 @@ const swaggerOptions = {
 // Routes
 const organisations = require('./routes/organisations');
 const mobiles = require('./routes/mobiles');
+const schema = require('./routes/schema');
 const stops = require('./routes/stops');
 
 // Set port to be 8080 for development, or the process environment for production/dev.
@@ -41,13 +42,15 @@ app.use(function (req, res, next) {
 	next();
 });
 
-// Allow us to read JSON as JSON
+// Allow us to read JSON as JSON and text as text
 app.use(bodyParser.json());
+app.use(bodyParser.text({ type: 'text/csv' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // API routes
 app.use('/api/organisations', organisations);
 app.use('/api/mobiles', mobiles);
+app.use('/api/schema', schema);
 app.use('/api/stops', stops);
 
 // Swagger documentation endpoint

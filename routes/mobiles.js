@@ -44,10 +44,10 @@ router.post('/',
 );
 
 //
-router.put('/',
+router.put('/:id',
     [check('id').isInt()],
     (req, res) => {
-        const id = req.body.id;
+        const id = req.query.id;
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(422).json({ status: "422", title: "Input validation error", errors: errors.array() });
         const keys = ['name', 'organisation_id', 'timetable'];
