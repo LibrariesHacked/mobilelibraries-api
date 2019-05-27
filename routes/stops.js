@@ -8,14 +8,14 @@ const stopModel = require('../models/stop');
 router.get('/', function (req, res, next) {
 
 	// Parameters
-	const organisation_id = req.query.organisation_id || null;
-	const mobile_id = req.query.mobile_id || null;
-	const route_id = req.query.route_id || null;
+	const organisation_ids = req.query.organisation_ids || null;
+	const mobile_ids = req.query.mobile_ids || null;
+	const route_ids = req.query.route_ids || null;
 	const limit = req.query.limit || 1000;
 	const page = req.query.page || 1;
 	const sort = req.query.sort || 'id';
 
-	stopModel.getStops(organisation_id, mobile_id, route_id, limit, page, sort).then(stops => {
+	stopModel.getStops(organisation_ids, mobile_ids, route_ids, limit, page, sort).then(stops => {
 		// We are going to set content headers to set the paging values
 		res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page');
 		res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0);

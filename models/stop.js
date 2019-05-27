@@ -3,12 +3,15 @@ const view_fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', '
 const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
 // Get Stops: 
-module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, page, sort) => {
+module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, limit, page, sort) => {
     let stops = [];
+    let organisations = [];
+    if (organisation_ids) organisations = organisation_ids.split('|').map(o => parseInt(o));
+    let mobiles = [];
+    if (mobile_ids) mobiles = mobile_ids.split('|').map(m => parseInt(m));
+    let routes = [];
+    if (route_ids) routes = route_ids.split('|').map(r => parseInt(r));
     let params = [
-        ['organisation_id', organisation_id],
-        ['mobile_id', mobile_id],
-        ['route_id', route_id],
         ['limit', limit],
         ['page', page]].filter(x => (x[1] !== null));
     try {
@@ -19,8 +22,6 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
 
         params.forEach((param, i) => {
             let idx = i + 1;
-            if (['organisation_id', 'route_id', 'mobile_id']
-                .indexOf(param[0]) !== -1) where_queries.push(param[0] + ' = $' + idx);
             if (param[0] === 'limit') limit_query = 'limit $' + idx + ' ';
             if (param[0] === 'page') {
                 params[i][1] = (limit * (page - 1)); // Calculate offset from the page and limit
@@ -29,8 +30,22 @@ module.exports.getStops = async (organisation_id, mobile_id, route_id, limit, pa
         });
 
         if (view_fields.indexOf(sort) !== -1) orderby_query = 'order by ' + sort + ' asc ';
-
         params = params.map(p => p[1]); // Change params array just to values.
+
+        if (organisations.length > 0) {
+            where_queries.push('organisation_id in (' + organisations.map((o, oidx) => '$' + (oidx + 1 + params.length)).join(',') + ')');
+            params = params.concat(organisations);
+        }
+
+        if (mobiles.length > 0) {
+            where_queries.push('mobile_id in (' + mobiles.map((m, midx) => '$' + (midx + 1 + params.length)).join(',') + ')');
+            params = params.concat(mobiles);
+        }
+
+        if (routes.length > 0) {
+            where_queries.push('route_id in (' + routes.map((r, ridx) => '$' + (ridx + 1 + params.length)).join(',') + ')');
+            params = params.concat(routes);
+        }
 
         const query = 'select ' + view_fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
             + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')

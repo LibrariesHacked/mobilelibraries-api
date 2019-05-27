@@ -135,7 +135,7 @@
 			}
 		},
 		"/api/stops": {
-			"summary": "A mobile library stop",
+			"summary": "Mobile library stops",
 			"get": {
 				"tags": [
 					"stops"
@@ -143,30 +143,30 @@
 				"description": "Return all stops",
 				"parameters": [
 					{
-						"name": "organisation_id",
-						"description": "Numeric ID of the organisation",
+						"name": "organisation_ids",
+						"description": "Pipe separated list of organisation IDs",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": "integer"
+							"type": "string"
 						}
 					},
 					{
-						"name": "mobile_id",
-						"description": "Numeric ID of the mobile",
+						"name": "mobile_ids",
+						"description": "Pipe separated list of mobile IDs",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": "integer"
+							"type": "string"
 						}
 					},
 					{
-						"name": "route_id",
-						"description": "Numeric ID of the route",
+						"name": "route_ids",
+						"description": "Pipe separated list of route IDs",
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": "integer"
+							"type": "string"
 						}
 					},
 					{
