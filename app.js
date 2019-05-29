@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-require('dotenv').config()
+require('dotenv').config();
 
 // Swagger setup
 const swaggerUi = require('swagger-ui-express');
@@ -29,6 +29,7 @@ const swaggerOptions = {
 // Routes
 const organisations = require('./routes/organisations');
 const mobiles = require('./routes/mobiles');
+const routes = require('./routes/routes');
 const schema = require('./routes/schema');
 const stops = require('./routes/stops');
 
@@ -50,6 +51,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // API routes
 app.use('/api/organisations', organisations);
 app.use('/api/mobiles', mobiles);
+app.use('/api/routes', routes);
 app.use('/api/schema', schema);
 app.use('/api/stops', stops);
 

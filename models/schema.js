@@ -34,8 +34,6 @@ module.exports.createData = async (schemadata) => {
         });
         query = query + inserts.join(',');
         await pool.query(query, (params));
-    } catch (e) {
-        console.log(e);
-    }
+    } catch (e) { }
     return;
 }

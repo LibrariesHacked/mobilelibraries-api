@@ -1,9 +1,10 @@
 const pool = require('../helpers/database');
+const view_fields = ['id', 'organisation_id', 'name', 'timetable', 'number_routes', 'number_stops'];
 
 // Get mobiles: 
 module.exports.getMobiles = async () => {
     let mobiles = [];
-    const query = 'select * from vw_mobiles';
+    const query = 'select ' + view_fields.join(', ') + ' from vw_mobiles';
     try {
         const { rows } = await pool.query(query);
         mobiles = rows;
@@ -15,9 +16,8 @@ module.exports.getMobiles = async () => {
 module.exports.getMobilesByOrganisationId = async (organisation_id) => {
     let mobiles = [];
     try {
-        const query = 'select * from vw_mobiles where organisation_id = $1';
-        const params = [organisation_id];
-        const { rows } = await pool.query(query, params);
+        const query = 'select ' + view_fields.join(', ') + ' from vw_mobiles where organisation_id = $1';
+        const { rows } = await pool.query(query, [organisation_id]);
         mobiles = rows;
     } catch (e) { }
     return mobiles;
@@ -27,7 +27,7 @@ module.exports.getMobilesByOrganisationId = async (organisation_id) => {
 module.exports.getMobileById = async (id) => {
     let mobile = null;
     try {
-        const query = 'select * from vw_mobiles where id = $1';
+        const query = 'select ' + view_fields.join(', ') + ' from vw_mobiles where id = $1';
         const params = [id];
         const { rows } = await pool.query(query, params);
         if (rows.length > 0) mobile = rows[0];
