@@ -12,7 +12,7 @@
 	"openapi": "3.0.0",
 	"paths": {
 		"/api/mobiles": {
-			"summary": "Update a mobile library",
+			"summary": "Mobile libraries",
 			"get": {
 				"tags": [
 					"mobiles"
@@ -88,6 +88,20 @@
 					},
 					"422": {
 						"description": "Validation error"
+					}
+				}
+			}
+		},
+		"/api/mobiles/locations": {
+			"summary": "Mobile library locations",
+			"get": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Return all mobile library locations",
+				"responses": {
+					"200": {
+						"description": "A list of mobile locations"
 					}
 				}
 			}

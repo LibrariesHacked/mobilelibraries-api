@@ -15,6 +15,11 @@ router.get('/', (req, res) => {
 });
 
 //
+router.get('/locations', (req, res) => {
+    mobileModel.getMobileLocations().then(locations => res.json(locations));
+});
+
+//
 router.get('/:id', (req, res) => {
     mobileModel.getMobileById(req.params.id)
         .then(mob => {
