@@ -45,7 +45,9 @@ module.exports.getMobileLocations = async () => {
         await pool.query(update_query);
         const { rows } = await pool.query(query);
         locations = rows;
-    } catch (e) { }
+    } catch (e) { 
+        console.log(e);
+    }
     return locations;
 }
 
