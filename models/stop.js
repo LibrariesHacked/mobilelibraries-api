@@ -3,7 +3,7 @@ const view_fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', '
 const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
 // Get Stops: 
-module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, limit, page, sort) => {
+module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, longitude, latitude, distance, limit, page, sort) => {
     let stops = [];
     let organisations = [];
     if (organisation_ids) organisations = organisation_ids.split('|').map(o => parseInt(o));
@@ -47,6 +47,11 @@ module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, limit,
             params = params.concat(routes);
         }
 
+        if (longitude && latitude && distance) {
+            where_queries.push('st_dwithin(st_transform(st_setsrid(st_makepoint($' + (params.length + 1) + ', $' + (params.length + 2) + '), 4326), 27700), st_transform(st_setsrid(st_makepoint(longitude, latitude), 4326), 27700), $' + (params.length + 3) + ')');
+            params = params.concat([longitude, latitude, distance]);
+        }
+
         const query = 'select ' + view_fields.join(', ') + ', count(*) OVER() AS total from vw_stops '
             + (where_queries.length > 0 ? 'where ' + where_queries.join(' and ') + ' ' : '')
             + orderby_query
@@ -56,7 +61,7 @@ module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, limit,
         const { rows } = await pool.query(query, params);
 
         stops = rows;
-    } catch (e) { }
+    } catch (e) {}
     return stops;
 }
 

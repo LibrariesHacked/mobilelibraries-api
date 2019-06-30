@@ -265,6 +265,33 @@
 						}
 					},
 					{
+						"name": "longitude",
+						"description": "Latitude of the coordinates used to filter results",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "latitude",
+						"description": "Latitude of the coordinates used to filter results",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "distance",
+						"description": "Distance in metres of the radius used to filter stops",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"name": "limit",
 						"description": "Number of results to return",
 						"in": "query",

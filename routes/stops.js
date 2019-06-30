@@ -11,11 +11,14 @@ router.get('/', function (req, res, next) {
 	const organisation_ids = req.query.organisation_ids || null;
 	const mobile_ids = req.query.mobile_ids || null;
 	const route_ids = req.query.route_ids || null;
+	const longitude = req.query.longitude || null;
+	const latitude = req.query.latitude || null;
+	const distance = req.query.distance || 1;
 	const limit = req.query.limit || 1000;
 	const page = req.query.page || 1;
 	const sort = req.query.sort || 'id';
 
-	stopModel.getStops(organisation_ids, mobile_ids, route_ids, limit, page, sort).then(stops => {
+	stopModel.getStops(organisation_ids, mobile_ids, route_ids, longitude, latitude, distance, limit, page, sort).then(stops => {
 		// We are going to set content headers to set the paging values
 		res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page');
 		res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0);
