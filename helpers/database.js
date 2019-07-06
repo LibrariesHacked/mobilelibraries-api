@@ -1,5 +1,8 @@
 const pg = require('pg');
 
+// Currently using timestamp without timezone so this ensures the time isn't messed with
+pg.types.setTypeParser(1114, str => str);
+
 const config = {
   user: process.env.PGUSER,
   host: process.env.PGHOST,
