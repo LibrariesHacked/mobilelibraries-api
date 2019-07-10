@@ -428,6 +428,52 @@
 				}
 			}
 		},
+		"/api/trips/{z}/{x}/{y}.mvt": {
+			"summary": "Vector tile service for mobile library trips",
+			"get": {
+				"tags": [
+					"trips"
+				],
+				"description": "Return trips within an x, y and zoom level",
+				"parameters": [
+					{
+						"name": "x",
+						"description": "X coordinate",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "y",
+						"description": "Y coordinate",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"name": "z",
+						"description": "Zoom level",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Mobile trip vector tile"
+					},
+					"204": {
+						"description": "No vector content"
+					}
+				}
+			}
+		},
 		"/api/schema": {
 			"summary": "Get the open data schema formatted data for mobile libraries",
 			"get": {
