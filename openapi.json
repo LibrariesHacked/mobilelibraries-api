@@ -382,6 +382,34 @@
 				}
 			}
 		},
+		"/api/stops/{id}/pdf": {
+			"summary": "A mobile library stop",
+			"get": {
+				"tags": [
+					"stops"
+				],
+				"description": "Returns a mobile library stop",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the stop",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A mobile library stop"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
 		"/api/stops/{z}/{x}/{y}.mvt": {
 			"summary": "Vector tile service for mobile library stops",
 			"get": {

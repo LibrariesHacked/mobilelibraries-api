@@ -1,4 +1,6 @@
 const pool = require('../helpers/database');
+const pdfHelper = require('../helpers/pdf');
+
 const view_fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
@@ -61,7 +63,7 @@ module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, longit
         const { rows } = await pool.query(query, params);
 
         stops = rows;
-    } catch (e) {}
+    } catch (e) { }
     return stops;
 }
 
@@ -74,6 +76,24 @@ module.exports.getStopById = async (id) => {
         if (rows.length > 0) stop = rows[0];
     } catch (e) { }
     return stop;
+}
+
+// Get Stop By ID: 
+module.exports.getStopPdfById = async (id) => {
+    try {
+        const query = 'select ' + view_fields.join(', ') + ' ' + 'from vw_stops where id = $1'
+        const { rows } = await pool.query(query, [id]);
+        if (rows.length > 0) {
+            stop = rows[0];
+            const stream = await pdfHelper.createPDFStream('views/pdf-stop.pug', {
+                name: stop.name
+            });
+            return stream;
+        } else {
+            return null;
+        } 
+
+    } catch (e) { }
 }
 
 // Get tile data
