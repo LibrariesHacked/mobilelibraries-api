@@ -2,7 +2,22 @@ doctype html
 html(lang='en')
 	head
 		title Mobile library stop template
+		include includes/pure-css.pug
 	body
-		h1 #{name} mobile library stop
-	div.container
-		p This is a mobile library stop timetable
+		h1 #{name}. Mobile Library Stop Timetable
+	div
+		table(class="pure-table pure-table-horizontal")
+			tr
+				th Stop name
+				td #{name}
+			tr
+				th Day and time
+				td #{day_time}
+			tr
+				th Address
+				td #{address}
+
+		table(class="pure-table pure-table-horizontal")
+			tr
+				th Dates
+				td #{dates}

@@ -4,14 +4,14 @@ const pg = require('pg');
 pg.types.setTypeParser(1114, str => str);
 
 const config = {
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-  ssl: true,
-  max: 10,
-  idleTimeoutMillis: 30000
+	user: process.env.PGUSER,
+	host: process.env.PGHOST,
+	database: process.env.PGDATABASE,
+	password: process.env.PGPASSWORD,
+	port: process.env.PGPORT,
+	ssl: true,
+	max: 10,
+	idleTimeoutMillis: 30000
 }
 
 var pool = new pg.Pool(config);
