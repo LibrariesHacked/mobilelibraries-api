@@ -4,20 +4,32 @@ html(lang='en')
 		title Mobile library stop template
 		include includes/pure-css.pug
 	body
-		h1 #{name}. Mobile Library Stop Timetable
-	div
-		table(class="pure-table pure-table-horizontal")
-			tr
-				th Stop name
-				td #{name}
-			tr
-				th Day and time
-				td #{day_time}
-			tr
-				th Address
-				td #{address}
+		h1 #{organisation_name} mobile library stops
 
-		table(class="pure-table pure-table-horizontal")
-			tr
-				th Dates
-				td #{dates}
+		h2 #{name} at #{community}
+		div
+			table(class="pure-table pure-table-horizontal")
+				tr
+					th Stop name
+					td #{name}
+				tr
+					th Community
+					td #{community}
+				tr
+					th Address
+					td #{address} #{postcode}
+				tr
+					th Day
+					td #{day}
+				tr
+					th Time
+					td #{time}
+
+			br
+
+			h3 Schedule
+			p Visiting #{name} on the following dates.
+			table(class="pure-table pure-table-horizontal")
+				tr
+					th Dates
+					td #{dates}

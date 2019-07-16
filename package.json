@@ -25,6 +25,7 @@
     "express-validator": "^6.1.1",
     "html-pdf": "^2.2.0",
     "json2csv": "^4.5.2",
+    "moment": "^2.24.0",
     "pg": "^7.11.0",
     "pug": "^2.0.4",
     "swagger-ui-express": "^4.0.7"

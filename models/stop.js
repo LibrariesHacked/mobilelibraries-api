@@ -1,7 +1,8 @@
 const pool = require('../helpers/database');
 const pdfHelper = require('../helpers/pdf');
+const moment = require('moment');
 
-const view_fields = ['id', 'route_id', 'mobile_id', 'organisation_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
+const view_fields = ['id', 'route_id', 'route_name', 'mobile_id', 'mobile_name', 'organisation_id', 'organisation_name', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'route_start', 'route_end', 'route_day', 'route_frequency', 'route_dates', 'timetable'];
 const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
 
 // Get Stops: 
@@ -89,14 +90,22 @@ module.exports.getStopPdfById = async (id) => {
 				name: stop.name,
 				community: stop.community,
 				address: stop.address,
-				time: arrival + '-' + departure
+				postcode: stop.postcode,
+				day: stop.route_day.trim(),
+				time: moment(stop.arrival, 'HH:mm:ss').format('h:mma') + '-' + moment(stop.departure, 'HH:mm:ss').format('h:mma'),
+				dates: stop.route_dates.map(d => moment(d).format('Mo MMM YYYY')).join(', '),
+				organisation_name: stop.organisation_name,
+				mobile_name: stop.mobile_name,
+				route_name: stop.route_name
 			});
 			return stream;
 		} else {
 			return null;
 		}
 
-	} catch (e) { }
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 // Get tile data
