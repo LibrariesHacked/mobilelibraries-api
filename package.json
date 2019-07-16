@@ -32,6 +32,6 @@
     "swagger-ui-express": "^4.0.7"
   },
   "engines": {
-    "node": "10.14.1"
+    "node": "10.15.2"
   }
 }
