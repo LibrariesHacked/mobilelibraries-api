@@ -86,7 +86,7 @@ module.exports.getStopPdfById = async (id) => {
 		const { rows } = await pool.query(query, [id]);
 		if (rows.length > 0) {
 			stop = rows[0];
-			const stream = await pdfHelper.createPDFStream('views/pdf-stop.pug', {
+			const stream = await pdfHelper.createPDFStream('views/temp.pug', {
 				name: stop.name,
 				community: stop.community,
 				address: stop.address,
