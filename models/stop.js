@@ -86,26 +86,13 @@ module.exports.getStopPdfById = async (id) => {
 		const { rows } = await pool.query(query, [id]);
 		if (rows.length > 0) {
 			stop = rows[0];
-			const stream = await pdfHelper.createPDFStream('views/temp.pug', {
-				name: stop.name,
-				community: stop.community,
-				address: stop.address,
-				postcode: stop.postcode,
-				day: stop.route_day.trim(),
-				time: moment(stop.arrival, 'HH:mm:ss').format('h:mma') + '-' + moment(stop.departure, 'HH:mm:ss').format('h:mma'),
-				dates: stop.route_dates.map(d => moment(d).format('Mo MMM YYYY')).join(', '),
-				organisation_name: stop.organisation_name,
-				mobile_name: stop.mobile_name,
-				route_name: stop.route_name
-			});
+			const stream = pdfHelper.createPDFStream();
 			return stream;
 		} else {
 			return null;
 		}
 
-	} catch (e) {
-		console.log(e);
-	}
+	} catch (e) { }
 }
 
 // Get tile data
