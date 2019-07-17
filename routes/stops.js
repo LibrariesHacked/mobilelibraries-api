@@ -43,10 +43,22 @@ router.get('/:id', function (req, res, next) {
 //
 router.get('/:id/pdf', function (req, res, next) {
 	stopModel.getStopPdfById(req.params.id)
-		.then(stream => {
+		.then(doc => {
 			res.setHeader('Content-type', 'application/pdf');
 			res.setHeader('Content-Disposition', 'attachment; filename=' + req.params.id + '.pdf');
-			stream.pipe(res)
+			let chunks = []
+			let result;
+
+			doc.on('data', function (chunk) {
+				chunks.push(chunk)
+			});
+			
+			doc.on('end', function () {
+				result = Buffer.concat(chunks);
+				res.send(result)
+			});
+			
+			doc.end()
 		});
 });
 

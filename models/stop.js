@@ -81,12 +81,37 @@ module.exports.getStopById = async (id) => {
 
 // Get Stop By ID: 
 module.exports.getStopPdfById = async (id) => {
+
 	try {
 		const query = 'select ' + view_fields.join(', ') + ' ' + 'from vw_stops where id = $1'
 		const { rows } = await pool.query(query, [id]);
 		if (rows.length > 0) {
 			stop = rows[0];
-			const stream = pdfHelper.createPDFStream();
+
+			const dates = stop.route_dates.map(d => {
+				return moment(d).format('Do MMM YYYY');
+			}).join(', ');
+
+			const definition = {
+				content: [
+					{ text: 'Stop timetable', style: 'header' },
+					{
+						layout: 'lightHorizontalLines',
+						table: {
+							headerRows: 1,
+							widths: ['auto', 'auto'],
+							body: [
+								['Stop', stop.name],
+								['Day', stop.route_day],
+								['Time', stop.arrival + '-' + stop.departure]
+							]
+						}
+					},
+					{ text: 'Dates: ' + dates, style: 'normal' }
+				]
+			};
+
+			const stream = pdfHelper.createPDFStream(definition);
 			return stream;
 		} else {
 			return null;
