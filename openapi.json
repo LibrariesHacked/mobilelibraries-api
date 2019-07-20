@@ -383,12 +383,40 @@
 			}
 		},
 		"/api/stops/{id}/pdf": {
-			"summary": "A mobile library stop",
+			"summary": "A mobile library stop as PDF",
 			"get": {
 				"tags": [
 					"stops"
 				],
-				"description": "Returns a mobile library stop",
+				"description": "Returns a mobile library stop PDF file",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the stop",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A mobile library stop PDF"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
+		"/api/stops/{id}/ics": {
+			"summary": "A mobile library stop in iCalendar format",
+			"get": {
+				"tags": [
+					"stops"
+				],
+				"description": "Returns a mobile library stop iCalendar file",
 				"parameters": [
 					{
 						"name": "id",

@@ -52,13 +52,24 @@ router.get('/:id/pdf', function (req, res, next) {
 			doc.on('data', function (chunk) {
 				chunks.push(chunk)
 			});
-			
+
 			doc.on('end', function () {
 				result = Buffer.concat(chunks);
 				res.send(result)
 			});
-			
+
 			doc.end()
+		});
+});
+
+//
+router.get('/:id/ics', function (req, res, next) {
+	stopModel.getStopCalendarById(req.params.id)
+		.then(calendar => {
+			res.setHeader('Content-type', 'text/calendar');
+			res.setHeader('Content-Disposition', 'attachment; filename=' + req.params.id + '.ics');
+			res.send(calendar)
+			res.end();
 		});
 });
 

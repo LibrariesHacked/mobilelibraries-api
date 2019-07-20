@@ -1,4 +1,5 @@
 const pool = require('../helpers/database');
+const iCalHelper = require('../helpers/ical');
 const pdfHelper = require('../helpers/pdf');
 const moment = require('moment');
 
@@ -79,7 +80,7 @@ module.exports.getStopById = async (id) => {
 	return stop;
 }
 
-// Get Stop By ID: 
+// Get Stop PDF By ID: 
 module.exports.getStopPdfById = async (id) => {
 
 	try {
@@ -118,6 +119,31 @@ module.exports.getStopPdfById = async (id) => {
 		}
 
 	} catch (e) { }
+}
+
+
+module.exports.getStopCalendarById = async (id) => {
+	try {
+		const query = 'select ' + view_fields.join(', ') + ' ' + 'from vw_stops where id = $1'
+		const { rows } = await pool.query(query, [id]);
+		if (rows.length > 0) {
+			stop = rows[0];
+			const cal = {
+				summary: stop.mobile_name + ' mobile library visit',
+				description: stop.organisation_name + ' ' + stop.mobile_name + ' visiting ' + stop.name,
+				location: stop.address,
+				start: moment(stop.route_dates[0] + '' + stop.arrival).format(),
+				end: moment(stop.route_dates[0] + '' + stop.departure).format(),
+				rrule: stop.route_frequency + ';UNTIL=' + moment(stop.route_dates[stop.route_dates.length - 1]).format(),
+				url: stop.timetable
+			}
+			return iCalHelper.createCalendar(cal);
+		} else {
+			return null;
+		}
+	} catch (e) { 
+		console.log(e);
+	}
 }
 
 // Get tile data
