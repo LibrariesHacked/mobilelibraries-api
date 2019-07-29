@@ -27,8 +27,8 @@
     "ical.js": "^1.3.0",
     "json2csv": "^4.5.2",
     "moment": "^2.24.0",
-    "pdfmake": "^0.1.57",
-    "pg": "^7.11.0",
+    "pdfmake": "^0.1.58",
+    "pg": "^7.12.0",
     "swagger-ui-express": "^4.0.7",
     "typeface-roboto": "0.0.54"
   },
