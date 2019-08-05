@@ -90,25 +90,56 @@ module.exports.getStopPdfById = async (id) => {
 			stop = rows[0];
 
 			const dates = stop.route_dates.map(d => {
-				return moment(d).format('Do MMM YYYY');
-			}).join(', ');
+				return moment(d).format('Do MMMM YYYY');
+			});
+			const max_chunk = Math.ceil(dates.length / 4);
+			const dates_1 = dates.splice(0, max_chunk);
+			const dates_2 = dates.splice(0, max_chunk);
+			const dates_3 = dates.splice(0, max_chunk);
+			const dates_4 = dates.splice(0, max_chunk).map(d => {
+				return { text: d }
+			});
 
 			const definition = {
 				content: [
-					{ text: 'Stop timetable', style: 'header' },
 					{
-						layout: 'lightHorizontalLines',
+						text: stop.organisation_name + '. ' + stop.mobile_name + ' Mobile Library.',
+						style: 'smallheader',
+						margin: [0, 0, 0, 4]
+					},
+					{
+						text: stop.name,
+						style: 'header',
+						margin: [0, 0, 0, 10]
+					},
+					{
+						layout: 'librariesLayout',
 						table: {
 							headerRows: 1,
 							widths: ['auto', 'auto'],
 							body: [
 								['Stop', stop.name],
+								['Address', stop.address + (stop.postcode ? ', ' + stop.postcode : '')],
 								['Day', stop.route_day],
-								['Time', stop.arrival + '-' + stop.departure]
+								['Time', moment(stop.arrival, 'HH:mm:ss').format('h:mma') + ' - ' + moment(stop.departure, 'HH:mm:ss').format('h:mma')]
 							]
-						}
+						},
+						margin: [0, 0, 0, 15]
 					},
-					{ text: 'Dates: ' + dates, style: 'normal' }
+					{ text: 'Dates', style: 'subheader', margin: [0, 0, 0, 8] },
+					{
+						layout: 'librariesLayout',
+						table: {
+							headerRows: 1,
+							widths: ['auto', 'auto', 'auto', 'auto'],
+							body: [
+								[dates_1, dates_2, dates_3, dates_4]
+							]
+						},
+						margin: [0, 0, 0, 15]
+					},
+					{ qr: stop.timetable, fit: '120', margin: [0, 0, 0, 15] },
+					{ text: stop.timetable, link: stop.timetable }
 				]
 			};
 
