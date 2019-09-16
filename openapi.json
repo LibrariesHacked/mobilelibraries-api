@@ -530,6 +530,49 @@
 				}
 			}
 		},
+		"/api/trips": {
+			"summary": "Mobile library trips",
+			"get": {
+				"tags": [
+					"trips"
+				],
+				"description": "Return all mobile library trips",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "A list of trips"
+					}
+				}
+			}
+		},
+		"/api/trips/{id}": {
+			"summary": "A trip between two mobile library stops",
+			"get": {
+				"tags": [
+					"trips"
+				],
+				"description": "Returns a mobile library trip",
+				"parameters": [
+					{
+						"name": "id",
+						"description": "Numeric ID of the trip",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A trip"
+					},
+					"404": {
+						"description": "Not found"
+					}
+				}
+			}
+		},
 		"/api/schema": {
 			"summary": "Get the open data schema formatted data for mobile libraries",
 			"get": {
