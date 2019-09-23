@@ -106,6 +106,49 @@
 				}
 			}
 		},
+		"/api/mobiles/nearest": {
+			"summary": "Mobile libraries within distance of location",
+			"get": {
+				"tags": [
+					"mobiles"
+				],
+				"description": "Return all mobile libraries within a certain distance",
+				"parameters": [
+					{
+						"name": "longitude",
+						"description": "Longitude that the mobile libraries should be near to",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "latitude",
+						"description": "Latitude that the mobile libraries should be near to",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "distance",
+						"description": "Distance in metres to search for mobile libraries",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of mobile libraries with nearest stop information"
+					}
+				}
+			}
+		},
 		"/api/organisations": {
 			"summary": "All mobile library organisations",
 			"get": {
@@ -266,7 +309,7 @@
 					},
 					{
 						"name": "longitude",
-						"description": "Latitude of the coordinates used to filter results",
+						"description": "Longitude of the coordinates used to filter results",
 						"in": "query",
 						"required": false,
 						"schema": {
@@ -288,7 +331,7 @@
 						"in": "query",
 						"required": false,
 						"schema": {
-							"type": "string"
+							"type": "integer"
 						}
 					},
 					{

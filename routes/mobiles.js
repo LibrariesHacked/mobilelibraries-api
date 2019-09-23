@@ -20,6 +20,14 @@ router.get('/locations', (req, res) => {
 });
 
 //
+router.get('/nearest', (req, res) => {
+	const longitude = req.query.longitude || null;
+	const latitude = req.query.latitude || null;
+	const distance = req.query.distance || null;
+	mobileModel.getMobilesWithinDistance(longitude, latitude, distance).then(mobiles => res.json(mobiles));
+});
+
+//
 router.get('/:id', (req, res) => {
 	mobileModel.getMobileById(req.params.id)
 		.then(mob => {

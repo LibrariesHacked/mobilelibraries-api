@@ -52,6 +52,17 @@ module.exports.getMobileLocations = async () => {
 	return locations;
 }
 
+// Get mobiles within distance: 
+module.exports.getMobilesWithinDistance = async (longitude, latitude, distance) => {
+	let mobiles = [];
+	const get_query = 'select * from fn_mobiles_nearest($1, $2, $3)';
+	try {
+		const { rows } = await pool.query(get_query, [longitude, latitude, distance]);
+		mobiles = rows;
+	} catch (e) { }
+	return mobiles;
+}
+
 // Create mobile
 module.exports.createMobile = async (mobile) => {
 	try {
