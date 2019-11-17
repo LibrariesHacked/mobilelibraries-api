@@ -39,7 +39,7 @@ module.exports.getMobileById = async (id) => {
 // Get mobile locations: 
 module.exports.getMobileLocations = async () => {
 	let locations = [];
-	const update_query = 'select fn_update_estimate_locations()';
+	const update_query = 'select fn_updates()';
 	const get_query = 'select ' + view_location_fields.join(', ') + ' from vw_mobiles_location';
 	try {
 		await pool.query(update_query);
