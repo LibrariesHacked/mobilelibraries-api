@@ -3,8 +3,8 @@ const iCalHelper = require('../helpers/ical');
 const pdfHelper = require('../helpers/pdf');
 const moment = require('moment');
 
-const view_fields = ['id', 'route_id', 'route_name', 'mobile_id', 'mobile_name', 'organisation_id', 'organisation_name', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'route_start', 'route_end', 'route_day', 'route_frequency', 'route_dates', 'timetable', 'longitude', 'latitude'];
-const table_fields = ['route_id', 'name', 'community', 'address', 'postcode', 'arrival', 'departure', 'timetable'];
+const view_fields = ['id', 'route_ids', 'route_names', 'mobile_ids', 'mobile_names', 'organisation_id', 'organisation_name', 'name', 'community', 'address', 'postcode', 'arrival_times', 'departure_times', 'route_start', 'route_end', 'route_days', 'route_frequencies', 'route_schedule', 'timetable', 'longitude', 'latitude'];
+const table_fields = ['name', 'community', 'address', 'timetable'];
 
 // Get Stops: 
 module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, longitude, latitude, distance, limit, page, sort) => {
@@ -37,17 +37,17 @@ module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, longit
 		params = params.map(p => p[1]); // Change params array just to values.
 
 		if (organisations.length > 0) {
-			where_queries.push('organisation_id in (' + organisations.map((o, oidx) => '$' + (oidx + 1 + params.length)).join(',') + ')');
+			where_queries.push('organisation_id in (' + organisations.map((o, oidx) => '$' + (oidx + 1 + params.length) + '::int').join(',') + ')');
 			params = params.concat(organisations);
 		}
 
 		if (mobiles.length > 0) {
-			where_queries.push('mobile_id in (' + mobiles.map((m, midx) => '$' + (midx + 1 + params.length)).join(',') + ')');
+			where_queries.push('mobile_ids && Array[' + mobiles.map((m, midx) => '$' + (midx + 1 + params.length) + '::int').join(',') + ']');
 			params = params.concat(mobiles);
 		}
 
 		if (routes.length > 0) {
-			where_queries.push('route_id in (' + routes.map((r, ridx) => '$' + (ridx + 1 + params.length)).join(',') + ')');
+			where_queries.push('route_ids && Array[' + routes.map((r, ridx) => '$' + (ridx + 1 + params.length) + '::int').join(',') + ']');
 			params = params.concat(routes);
 		}
 
@@ -65,7 +65,9 @@ module.exports.getStops = async (organisation_ids, mobile_ids, route_ids, longit
 		const { rows } = await pool.query(query, params);
 
 		stops = rows;
-	} catch (e) { }
+	} catch (e) { 
+		console.log(e);
+	}
 	return stops;
 }
 

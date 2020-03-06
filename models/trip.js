@@ -1,5 +1,5 @@
 const pool = require('../helpers/database');
-const view_fields = ['id', 'organisation_id', 'organisation_name', 'mobile_id', 'mobile_name', 'route_id', 'route_name', 'origin_stop_id', 'origin_stop_name', 'destination_stop_id', 'destination_stop_name', 'scheduled_duration', 'distance', 'duration', 'route_line'];
+const view_fields = ['id', 'origin_stop_id', 'origin_stop_name', 'destination_stop_id', 'destination_stop_name', 'distance', 'duration', 'route_line'];
 
 // Get tile data
 module.exports.getTileData = async (x, y, z) => {
