@@ -1,695 +1,695 @@
 {
-	"info": {
-		"title": "Mobile Libraries API",
-		"version": "1.0.0",
-		"description": "API to retrieve data about mobile library stops and timetables.",
-		"contact": {
-			"name": "Libraries Hacked",
-			"url": "https://www.librarieshacked.org",
-			"email": "info@librarieshacked.org"
-		}
-	},
-	"openapi": "3.0.0",
-	"paths": {
-		"/api/mobiles": {
-			"summary": "Mobile libraries",
-			"get": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Return all mobiles",
-				"parameters": [
-					{
-						"name": "organisation_id",
-						"description": "Numeric ID of the organisation the mobile is run by",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A list of mobiles"
-					}
-				}
-			},
-			"post": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Create a new mobile library",
-				"responses": {
-					"201": {
-						"description": "Mobile added"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/mobiles/{id}": {
-			"summary": "A mobile library",
-			"get": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Returns a mobile library",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the mobile",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A mobile"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			},
-			"put": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Update a mobile library",
-				"responses": {
-					"200": {
-						"description": "Mobile updated"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/mobiles/locations": {
-			"summary": "Mobile library locations",
-			"get": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Return all mobile library locations",
-				"responses": {
-					"200": {
-						"description": "A list of mobile locations"
-					}
-				}
-			}
-		},
-		"/api/mobiles/nearest": {
-			"summary": "Mobile libraries within distance of location",
-			"get": {
-				"tags": [
-					"mobiles"
-				],
-				"description": "Return all mobile libraries within a certain distance",
-				"parameters": [
-					{
-						"name": "longitude",
-						"description": "Longitude that the mobile libraries should be near to",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "latitude",
-						"description": "Latitude that the mobile libraries should be near to",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "distance",
-						"description": "Distance in metres to search for mobile libraries",
-						"in": "query",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A list of mobile libraries with nearest stop information"
-					}
-				}
-			}
-		},
-		"/api/organisations": {
-			"summary": "All mobile library organisations",
-			"get": {
-				"tags": [
-					"organisations"
-				],
-				"description": "Return all organisations",
-				"responses": {
-					"200": {
-						"description": "A list of organisations"
-					}
-				}
-			}
-		},
-		"/api/organisations/{id}": {
-			"summary": "A mobile library organisation",
-			"get": {
-				"tags": [
-					"organisations"
-				],
-				"description": "Return an organisation",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the organisation",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "An organisation"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			}
-		},
-		"/api/routes": {
-			"summary": "Mobile library routes",
-			"get": {
-				"tags": [
-					"routes"
-				],
-				"description": "Return all mobile library routes",
-				"parameters": [
-					{
-						"name": "organisation_id",
-						"description": "Numeric ID of the organisation the route is run by",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A list of routes"
-					}
-				}
-			},
-			"post": {
-				"tags": [
-					"routes"
-				],
-				"description": "Create a new mobile library route",
-				"responses": {
-					"201": {
-						"description": "Route added"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/routes/{id}": {
-			"summary": "A mobile library route",
-			"get": {
-				"tags": [
-					"routes"
-				],
-				"description": "Returns a mobile library route",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the route",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A route"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			},
-			"put": {
-				"tags": [
-					"routes"
-				],
-				"description": "Update a mobile library route",
-				"responses": {
-					"200": {
-						"description": "Route updated"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/stops": {
-			"summary": "Mobile library stops",
-			"get": {
-				"tags": [
-					"stops"
-				],
-				"description": "Return all stops",
-				"parameters": [
-					{
-						"name": "organisation_ids",
-						"description": "Pipe separated list of organisation IDs",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "mobile_ids",
-						"description": "Pipe separated list of mobile IDs",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "route_ids",
-						"description": "Pipe separated list of route IDs",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "longitude",
-						"description": "Longitude of the coordinates used to filter results",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "latitude",
-						"description": "Latitude of the coordinates used to filter results",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "distance",
-						"description": "Distance in metres of the radius used to filter stops",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "limit",
-						"description": "Number of results to return",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "page",
-						"description": "The page to return (for paged results)",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "sort",
-						"description": "The column to sort by",
-						"in": "query",
-						"required": false,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A list of stops"
-					}
-				}
-			},
-			"post": {
-				"tags": [
-					"stops"
-				],
-				"description": "Create a new mobile library stop",
-				"responses": {
-					"201": {
-						"description": "Mobile library stop added"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/stops/{id}": {
-			"summary": "A mobile library stop",
-			"get": {
-				"tags": [
-					"stops"
-				],
-				"description": "Returns a mobile library stop",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the stop",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A mobile library stop"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			},
-			"put": {
-				"tags": [
-					"stops"
-				],
-				"description": "Update a mobile library stop",
-				"responses": {
-					"200": {
-						"description": "Mobile library stop updated"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/stops/{id}/pdf": {
-			"summary": "A mobile library stop as PDF",
-			"get": {
-				"tags": [
-					"stops"
-				],
-				"description": "Returns a mobile library stop PDF file",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the stop",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A mobile library stop PDF"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			}
-		},
-		"/api/stops/{id}/ics": {
-			"summary": "A mobile library stop in iCalendar format",
-			"get": {
-				"tags": [
-					"stops"
-				],
-				"description": "Returns a mobile library stop iCalendar file",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the stop",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A mobile library stop"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			}
-		},
-		"/api/stops/{z}/{x}/{y}.mvt": {
-			"summary": "Vector tile service for mobile library stops",
-			"get": {
-				"tags": [
-					"stops"
-				],
-				"description": "Return stops within an x, y and zoom level",
-				"parameters": [
-					{
-						"name": "x",
-						"description": "X coordinate",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "y",
-						"description": "Y coordinate",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "z",
-						"description": "Zoom level",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Mobile stops vector tile"
-					},
-					"204": {
-						"description": "No vector content"
-					}
-				}
-			}
-		},
-		"/api/trips/{z}/{x}/{y}.mvt": {
-			"summary": "Vector tile service for mobile library trips",
-			"get": {
-				"tags": [
-					"trips"
-				],
-				"description": "Return trips within an x, y and zoom level",
-				"parameters": [
-					{
-						"name": "x",
-						"description": "X coordinate",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "y",
-						"description": "Y coordinate",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					},
-					{
-						"name": "z",
-						"description": "Zoom level",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Mobile trip vector tile"
-					},
-					"204": {
-						"description": "No vector content"
-					}
-				}
-			}
-		},
-		"/api/trips": {
-			"summary": "Mobile library trips",
-			"get": {
-				"tags": [
-					"trips"
-				],
-				"description": "Return all mobile library trips",
-				"parameters": [],
-				"responses": {
-					"200": {
-						"description": "A list of trips"
-					}
-				}
-			}
-		},
-		"/api/trips/{id}": {
-			"summary": "A trip between two mobile library stops",
-			"get": {
-				"tags": [
-					"trips"
-				],
-				"description": "Returns a mobile library trip",
-				"parameters": [
-					{
-						"name": "id",
-						"description": "Numeric ID of the trip",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "integer"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A trip"
-					},
-					"404": {
-						"description": "Not found"
-					}
-				}
-			}
-		},
-		"/api/schema": {
-			"summary": "Get the open data schema formatted data for mobile libraries",
-			"get": {
-				"tags": [
-					"schema"
-				],
-				"description": "Return all mobile library data",
-				"responses": {
-					"200": {
-						"description": "A list of mobile library data in a format conforming to the schema",
-						"content": {
-							"text/csv": {},
-							"application/json": {}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": [
-					"schema"
-				],
-				"description": "Add a new set of mobile library data to a staging table",
-				"requestBody": {
-					"description": "Mobile library data in mobile library data schema format",
-					"required": true,
-					"content": {
-						"text/csv": {
-							"type": "string"
-						},
-						"application/json": {
-							"type": "array"
-						}
-					}
-				},
-				"responses": {
-					"201": {
-						"description": "Mobile library data added to staging table"
-					},
-					"422": {
-						"description": "Validation error"
-					}
-				}
-			}
-		},
-		"/api/schema/{organisation_name}": {
-			"summary": "Get the schema formatted data for a mobile library organisation",
-			"get": {
-				"tags": [
-					"schema"
-				],
-				"description": "Return mobile library data for specified organisation",
-				"parameters": [
-					{
-						"name": "organisation_name",
-						"description": "Name of the organisation",
-						"in": "path",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "A list of mobile library data in a format conforming to the schema",
-						"content": {
-							"text/csv": {},
-							"application/json": {}
-						}
-					}
-				}
-			}
-		}
-	},
-	"components": {},
-	"tags": []
+  "info": {
+    "title": "Mobile Libraries API",
+    "version": "1.0.0",
+    "description": "API to retrieve data about mobile library stops and timetables.",
+    "contact": {
+      "name": "Libraries Hacked",
+      "url": "https://www.librarieshacked.org",
+      "email": "info@librarieshacked.org"
+    }
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/mobiles": {
+      "summary": "Mobile libraries",
+      "get": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Return all mobiles",
+        "parameters": [
+          {
+            "name": "organisation_id",
+            "description": "Numeric ID of the organisation the mobile is run by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of mobiles"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Create a new mobile library",
+        "responses": {
+          "201": {
+            "description": "Mobile added"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/mobiles/{id}": {
+      "summary": "A mobile library",
+      "get": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Returns a mobile library",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the mobile",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A mobile"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Update a mobile library",
+        "responses": {
+          "200": {
+            "description": "Mobile updated"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/mobiles/locations": {
+      "summary": "Mobile library locations",
+      "get": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Return all mobile library locations",
+        "responses": {
+          "200": {
+            "description": "A list of mobile locations"
+          }
+        }
+      }
+    },
+    "/api/mobiles/nearest": {
+      "summary": "Mobile libraries within distance of location",
+      "get": {
+        "tags": [
+          "mobiles"
+        ],
+        "description": "Return all mobile libraries within a certain distance",
+        "parameters": [
+          {
+            "name": "longitude",
+            "description": "Longitude that the mobile libraries should be near to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latitude",
+            "description": "Latitude that the mobile libraries should be near to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "distance",
+            "description": "Distance in metres to search for mobile libraries",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of mobile libraries with nearest stop information"
+          }
+        }
+      }
+    },
+    "/api/organisations": {
+      "summary": "All mobile library organisations",
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "description": "Return all organisations",
+        "responses": {
+          "200": {
+            "description": "A list of organisations"
+          }
+        }
+      }
+    },
+    "/api/organisations/{id}": {
+      "summary": "A mobile library organisation",
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "description": "Return an organisation",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the organisation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An organisation"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/routes": {
+      "summary": "Mobile library routes",
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "description": "Return all mobile library routes",
+        "parameters": [
+          {
+            "name": "organisation_id",
+            "description": "Numeric ID of the organisation the route is run by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of routes"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "routes"
+        ],
+        "description": "Create a new mobile library route",
+        "responses": {
+          "201": {
+            "description": "Route added"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/routes/{id}": {
+      "summary": "A mobile library route",
+      "get": {
+        "tags": [
+          "routes"
+        ],
+        "description": "Returns a mobile library route",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the route",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A route"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "routes"
+        ],
+        "description": "Update a mobile library route",
+        "responses": {
+          "200": {
+            "description": "Route updated"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/stops": {
+      "summary": "Mobile library stops",
+      "get": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Return all stops",
+        "parameters": [
+          {
+            "name": "organisation_ids",
+            "description": "Pipe separated list of organisation IDs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mobile_ids",
+            "description": "Pipe separated list of mobile IDs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "route_ids",
+            "description": "Pipe separated list of route IDs",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "longitude",
+            "description": "Longitude of the coordinates used to filter results",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latitude",
+            "description": "Latitude of the coordinates used to filter results",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "distance",
+            "description": "Distance in metres of the radius used to filter stops",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "description": "Number of results to return",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "description": "The page to return (for paged results)",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort",
+            "description": "The column to sort by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of stops"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Create a new mobile library stop",
+        "responses": {
+          "201": {
+            "description": "Mobile library stop added"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/stops/{id}": {
+      "summary": "A mobile library stop",
+      "get": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Returns a mobile library stop",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the stop",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A mobile library stop"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Update a mobile library stop",
+        "responses": {
+          "200": {
+            "description": "Mobile library stop updated"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/stops/{id}/pdf": {
+      "summary": "A mobile library stop as PDF",
+      "get": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Returns a mobile library stop PDF file",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the stop",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A mobile library stop PDF"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/stops/{id}/ics": {
+      "summary": "A mobile library stop in iCalendar format",
+      "get": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Returns a mobile library stop iCalendar file",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the stop",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A mobile library stop"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/stops/{z}/{x}/{y}.mvt": {
+      "summary": "Vector tile service for mobile library stops",
+      "get": {
+        "tags": [
+          "stops"
+        ],
+        "description": "Return stops within an x, y and zoom level",
+        "parameters": [
+          {
+            "name": "x",
+            "description": "X coordinate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "y",
+            "description": "Y coordinate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "z",
+            "description": "Zoom level",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mobile stops vector tile"
+          },
+          "204": {
+            "description": "No vector content"
+          }
+        }
+      }
+    },
+    "/api/trips/{z}/{x}/{y}.mvt": {
+      "summary": "Vector tile service for mobile library trips",
+      "get": {
+        "tags": [
+          "trips"
+        ],
+        "description": "Return trips within an x, y and zoom level",
+        "parameters": [
+          {
+            "name": "x",
+            "description": "X coordinate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "y",
+            "description": "Y coordinate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "z",
+            "description": "Zoom level",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mobile trip vector tile"
+          },
+          "204": {
+            "description": "No vector content"
+          }
+        }
+      }
+    },
+    "/api/trips": {
+      "summary": "Mobile library trips",
+      "get": {
+        "tags": [
+          "trips"
+        ],
+        "description": "Return all mobile library trips",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A list of trips"
+          }
+        }
+      }
+    },
+    "/api/trips/{id}": {
+      "summary": "A trip between two mobile library stops",
+      "get": {
+        "tags": [
+          "trips"
+        ],
+        "description": "Returns a mobile library trip",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Numeric ID of the trip",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A trip"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/schema": {
+      "summary": "Get the open data schema formatted data for mobile libraries",
+      "get": {
+        "tags": [
+          "schema"
+        ],
+        "description": "Return all mobile library data",
+        "responses": {
+          "200": {
+            "description": "A list of mobile library data in a format conforming to the schema",
+            "content": {
+              "text/csv": {},
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "schema"
+        ],
+        "description": "Add a new set of mobile library data to a staging table",
+        "requestBody": {
+          "description": "Mobile library data in mobile library data schema format",
+          "required": true,
+          "content": {
+            "text/csv": {
+              "type": "string"
+            },
+            "application/json": {
+              "type": "array"
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mobile library data added to staging table"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/api/schema/{organisation_name}": {
+      "summary": "Get the schema formatted data for a mobile library organisation",
+      "get": {
+        "tags": [
+          "schema"
+        ],
+        "description": "Return mobile library data for specified organisation",
+        "parameters": [
+          {
+            "name": "organisation_name",
+            "description": "Name of the organisation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of mobile library data in a format conforming to the schema",
+            "content": {
+              "text/csv": {},
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
 }
