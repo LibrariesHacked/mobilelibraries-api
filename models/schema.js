@@ -1,36 +1,35 @@
-const pool = require('../helpers/database');
-const view_fields = ['organisation', 'mobile', 'route', 'community', 'stop', 'address', 'postcode', 'geox', 'geoy', 'day', 'arrival', 'departure', 'frequency', 'start', '"end"', 'timetable'];
+const pool = require('../helpers/database')
+const viewFields = ['organisation', 'mobile', 'route', 'community', 'stop', 'address', 'postcode', 'geox', 'geoy', 'day', 'arrival', 'departure', 'frequency', 'start', '"end"', 'timetable']
 
-module.exports.getViewFields = () => view_fields;
+module.exports.getViewFields = () => viewFields
 
 module.exports.getData = async (organisation) => {
-  let schema_data = [];
+  let schemaData = []
   try {
-    let query = 'select ' + view_fields.join(', ') + ' from vw_schema';
-    if (organisation) query = query + ' where organisation = $1';
-    const { rows } = await pool.query(query, (organisation ? [organisation] : []));
-    schema_data = rows;
+    let query = 'select ' + viewFields.join(', ') + ' from vw_schema'
+    if (organisation) query = query + ' where organisation = $1'
+    const { rows } = await pool.query(query, (organisation ? [organisation] : []))
+    schemaData = rows
   } catch (e) { }
-  return schema_data;
+  return schemaData
 }
 
 module.exports.createData = async (schemadata) => {
   try {
-    let params = [];
-    let query = 'insert into staging(' + view_fields.join(', ') + ') values ';
-    let inserts = [];
-    let index = 0;
+    const params = []
+    let query = 'insert into staging(' + viewFields.join(', ') + ') values '
+    const inserts = []
+    let index = 0
     schemadata.forEach(stop => {
-      let insert_vals = []
+      const insertVals = []
       Object.keys(stop).forEach(key => {
-        index++;
-        insert_vals.push('$' + index)
-        params.push(stop[key] != '' ? stop[key] : null);
-      });
-      inserts.push('(' + insert_vals.join(',') + ')')
-    });
-    query = query + inserts.join(',');
-    await pool.query(query, (params));
+        index++
+        insertVals.push('$' + index)
+        params.push(stop[key] !== '' ? stop[key] : null)
+      })
+      inserts.push('(' + insertVals.join(',') + ')')
+    })
+    query = query + inserts.join(',')
+    await pool.query(query, (params))
   } catch (e) { }
-  return;
 }
