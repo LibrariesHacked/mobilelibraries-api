@@ -4,7 +4,7 @@ const { check, validationResult } = require('express-validator/check')
 const cache = require('../middleware/cache')
 const stopModel = require('../models/stop')
 
-router.get('/', cache(3600), function (req, res, next) {
+router.get('/', function (req, res, next) {
   const organisationIds = req.query.organisation_ids || null
   const mobileIds = req.query.mobile_ids || null
   const routeIds = req.query.route_ids || null
