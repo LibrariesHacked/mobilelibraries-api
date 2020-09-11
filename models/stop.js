@@ -3,10 +3,10 @@ const iCalHelper = require('../helpers/ical')
 const pdfHelper = require('../helpers/pdf')
 const moment = require('moment')
 
-const viewFields = ['id', 'route_ids', 'route_names', 'mobile_ids', 'mobile_names', 'organisation_id', 'organisation_name', 'name', 'community', 'address', 'postcode', 'arrival_times', 'departure_times', 'route_start', 'route_end', 'route_days', 'route_frequencies', 'route_schedule', 'timetable', 'longitude', 'latitude']
+const viewFields = ['id', 'route_ids', 'route_names', 'mobile_ids', 'mobile_names', 'organisation_id', 'organisation_name', 'service_code', 'name', 'community', 'address', 'postcode', 'arrival_times', 'departure_times', 'route_start', 'route_end', 'route_days', 'route_frequencies', 'route_schedule', 'timetable', 'longitude', 'latitude']
 const tableFields = ['name', 'community', 'address', 'timetable']
 
-module.exports.getStops = async (organisationIds, mobileIds, routeIds, longitude, latitude, distance, limit, page, sort) => {
+module.exports.getStops = async (organisationIds, mobileIds, routeIds, serviceCodes, longitude, latitude, distance, limit, page, sort) => {
   let stops = []
   let organisations = []
   if (organisationIds) organisations = organisationIds.split('|').map(o => parseInt(o))
@@ -14,6 +14,8 @@ module.exports.getStops = async (organisationIds, mobileIds, routeIds, longitude
   if (mobileIds) mobiles = mobileIds.split('|').map(m => parseInt(m))
   let routes = []
   if (routeIds) routes = routeIds.split('|').map(r => parseInt(r))
+  let services = []
+  if (serviceCodes) services = serviceCodes.split('|')
   let params = [
     ['limit', limit],
     ['page', page]].filter(x => (x[1] !== null))
@@ -48,6 +50,11 @@ module.exports.getStops = async (organisationIds, mobileIds, routeIds, longitude
     if (routes.length > 0) {
       whereQueries.push('route_ids && Array[' + routes.map((r, ridx) => '$' + (ridx + 1 + params.length) + '::int').join(',') + ']')
       params = params.concat(routes)
+    }
+
+    if (services.length > 0) {
+      whereQueries.push('service_code in (' + services.map((o, oidx) => '$' + (oidx + 1 + params.length)).join(',') + ')')
+      params = params.concat(services)
     }
 
     if (longitude && latitude && distance) {

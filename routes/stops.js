@@ -8,6 +8,7 @@ router.get('/', function (req, res, next) {
   const organisationIds = req.query.organisation_ids || null
   const mobileIds = req.query.mobile_ids || null
   const routeIds = req.query.route_ids || null
+  const serviceCodes = req.query.service_codes || null
   const longitude = req.query.longitude || null
   const latitude = req.query.latitude || null
   const distance = req.query.distance || 1
@@ -15,7 +16,7 @@ router.get('/', function (req, res, next) {
   const page = req.query.page || 1
   const sort = req.query.sort || 'id'
 
-  stopModel.getStops(organisationIds, mobileIds, routeIds, longitude, latitude, distance, limit, page, sort).then(stops => {
+  stopModel.getStops(organisationIds, mobileIds, routeIds, serviceCodes, longitude, latitude, distance, limit, page, sort).then(stops => {
     res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page')
     res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0)
     res.setHeader('X-Page', page)
