@@ -1,5 +1,5 @@
 const pool = require('../helpers/database')
-const viewFields = ['id', 'country', 'code', 'name', 'timetable', 'website', 'email', 'colour', 'logo', 'number_mobiles', 'number_routes', 'number_stops']
+const viewFields = ['id', 'country', 'service_code', 'name', 'timetable', 'website', 'email', 'colour', 'logo', 'number_mobiles', 'number_routes', 'number_stops']
 
 module.exports.getOrganisations = async () => {
   let organisations = []
