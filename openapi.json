@@ -383,6 +383,50 @@
         }
       }
     },
+    "/api/stops/nearest": {
+      "summary": "Nearest mobile library stops to a location",
+      "get": {
+        "tags": [
+          "stops",
+          "nearest"
+        ],
+        "description": "Return stops nearest to a location",
+        "parameters": [
+          {
+            "name": "longitude",
+            "description": "Longitude of the coordinates used for nearest matching",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "latitude",
+            "description": "Latitude of the coordinates used for nearest matching",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "description": "Number of results to return",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of stops"
+          }
+        }
+      }
+    },
     "/api/stops/{id}": {
       "summary": "A mobile library stop",
       "get": {

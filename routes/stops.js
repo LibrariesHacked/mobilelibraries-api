@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { check, validationResult } = require('express-validator/check')
+const { check, validationResult } = require('express-validator')
 const cache = require('../middleware/cache')
 const stopModel = require('../models/stop')
 
@@ -22,6 +22,17 @@ router.get('/', function (req, res, next) {
     res.setHeader('X-Page', page)
     stops = stops.map(({ total, ...stop }) => stop) // Remove total column
     res.json(stops)
+  })
+})
+
+router.get('/nearest', function (req, res, next) {
+  const longitude = req.query.longitude || null
+  const latitude = req.query.latitude || null
+  const limit = req.query.limit || 1
+
+  stopModel.getNearestStops(longitude, latitude, limit).then(stops => {
+    if (stops == null || stops.length === 0) res.status(404).json({ errors: [{ status: '404', title: 'Not Found' }] })
+    return res.json(stops)
   })
 })
 
