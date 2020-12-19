@@ -78,7 +78,7 @@ module.exports.getStops = async (organisationIds, mobileIds, routeIds, serviceCo
 module.exports.getNearestStops = async (longitude, latitude, limit) => {
   let stops = []
   try {
-    const query = 'select ' + viewFields.join(', ') + ' ' + 'from vw_stops order by ST_Distance(st_transform(st_setsrid(st_makepoint($1, $2), 4326), 27700), st_transform(st_setsrid(st_makepoint(longitude, latitude), 4326), 27700)) ASC LIMIT $3'
+    const query = 'select ' + viewFields.join(', ') + ', ST_Distance(st_transform(st_setsrid(st_makepoint($1, $2), 4326), 27700), st_transform(st_setsrid(st_makepoint(longitude, latitude), 4326), 27700)) as distance from vw_stops order by distance ASC LIMIT $3'
     const { rows } = await pool.query(query, [longitude, latitude, limit])
     if (rows.length > 0) stops = rows
   } catch (e) { }

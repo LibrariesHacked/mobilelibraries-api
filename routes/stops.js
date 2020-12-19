@@ -31,8 +31,11 @@ router.get('/nearest', function (req, res, next) {
   const limit = req.query.limit || 1
 
   stopModel.getNearestStops(longitude, latitude, limit).then(stops => {
-    if (stops == null || stops.length === 0) res.status(404).json({ errors: [{ status: '404', title: 'Not Found' }] })
-    return res.json(stops)
+    if (stops == null || stops.length === 0) {
+      res.status(404).json({ errors: [{ status: '404', title: 'Not Found' }] })
+    } else {
+      res.json(stops)
+    }
   })
 })
 
