@@ -1,4 +1,4 @@
-# Mobile Libraries API
+# Mobile libraries API
 
 This is an API to expose mobile library data in the UK. It will be used both for providing that data as open data, as well as providing all the necessary functions for managing and manipulating that data.
 
