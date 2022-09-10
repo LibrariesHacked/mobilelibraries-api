@@ -18,23 +18,23 @@
     "url": "https://github.com/LibrariesHacked/mobilelibraries-api/issues"
   },
   "homepage": "https://github.com/LibrariesHacked/mobilelibraries-api#readme",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "csvtojson": "^2.0.10",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-validator": "^6.8.0",
-    "ical-generator": "^1.15.3",
-    "ical.js": "^1.4.0",
-    "json2csv": "^4.5.4",
-    "memory-cache": "^0.2.0",
-    "moment": "^2.29.4",
-    "pdfmake": "^0.1.68",
-    "pg": "^8.7.1",
-    "swagger-ui-express": "^4.1.5",
-    "typeface-roboto": "0.0.75"
-  },
   "engines": {
     "node": "14-lts"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "csvtojson": "^2.0.10",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.2",
+    "ical-generator": "^3.5.1",
+    "ical.js": "^1.5.0",
+    "json2csv": "^5.0.7",
+    "memory-cache": "^0.2.0",
+    "moment": "^2.29.4",
+    "pdfmake": "^0.2.5",
+    "pg": "^8.8.0",
+    "swagger-ui-express": "^4.5.0",
+    "typeface-roboto": "^1.1.13"
   }
 }
