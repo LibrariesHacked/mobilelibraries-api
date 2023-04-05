@@ -15,8 +15,9 @@ router.get('/', function (req, res, next) {
   const limit = req.query.limit || 1000
   const page = req.query.page || 1
   const sort = req.query.sort || 'id'
+  const direction = req.query.direction || 'asc'
 
-  stopModel.getStops(organisationIds, mobileIds, routeIds, serviceCodes, longitude, latitude, distance, limit, page, sort).then(stops => {
+  stopModel.getStops(organisationIds, mobileIds, routeIds, serviceCodes, longitude, latitude, distance, limit, page, sort, direction).then(stops => {
     res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page')
     res.setHeader('X-Total-Count', stops.length > 0 ? stops[0].total : 0)
     res.setHeader('X-Page', page)
