@@ -39,7 +39,8 @@ module.exports.getStops = async (
   distance,
   limit,
   page,
-  sort
+  sort,
+  direction
 ) => {
   let stops = []
   let organisations = []
@@ -59,7 +60,7 @@ module.exports.getStops = async (
     const whereQueries = []
     let limitQuery = ''
     let offsetQuery = ''
-    let orderbyQuery = ' '
+    let orderbyQuery = ''
     let selectFields = [...viewFields]
 
     params.forEach((param, i) => {
@@ -71,7 +72,7 @@ module.exports.getStops = async (
       }
     })
 
-    if (viewFields.indexOf(sort) !== -1) orderbyQuery = `order by ${sort} asc`
+    if (viewFields.indexOf(sort) !== -1) orderbyQuery = `order by ${sort} ${direction}`
     params = params.map(p => p[1]) // Change params array just to values.
 
     if (organisations.length > 0) {
@@ -123,11 +124,13 @@ module.exports.getStops = async (
         `round(st_distance(st_transform(st_setsrid(st_makepoint($${longitudeParam}, $${latitudeParam}), 4326), 27700), st_transform(st_setsrid(st_makepoint(longitude, latitude), 4326), 27700))) as distance`
       )
       params = params.concat([longitude, latitude, distance])
+      
+      if (sort === 'distance') orderbyQuery = `order by distance ${direction}`
     }
 
     const where_query =
-      whereQueries.length > 0 ? `where ${whereQueries.join(' and ')} ` : ``
-    const query = `select ${viewFields.join(
+      whereQueries.length > 0 ? `where ${whereQueries.join(' and ')}` : ``
+    const query = `select ${selectFields.join(
       ', '
     )}, count(*) OVER() AS total from vw_stops ${where_query} ${orderbyQuery} ${limitQuery} ${offsetQuery}`
 
