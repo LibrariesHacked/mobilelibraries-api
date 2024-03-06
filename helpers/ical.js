@@ -1,15 +1,17 @@
 const ical = require('ical-generator') // For generating the event
+
 const icalJs = require('ical.js') // For parsing the recur rule
 
 const prod = {
   company: 'Libraries Hacked',
   product: 'Mobile Libraries',
-  language: 'EN'
+  language: 'en'
 }
+
 const timezone = 'Europe/London'
 ical().timezone(timezone)
 
-module.exports.createCalendar = (data) => {
+module.exports.createCalendar = data => {
   // The recur object using ical.js
   const recur = new icalJs.Recur.fromString(data.rrule) // eslint-disable-line
 

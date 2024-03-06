@@ -1,12 +1,13 @@
 const express = require('express')
+
 const bodyParser = require('body-parser')
+
 const app = express()
 
 require('dotenv').config()
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('./openapi.json')
-
 const swaggerOptions = {
   customCss: '.swagger-ui .topbar { display: none }'
 }
@@ -20,7 +21,10 @@ const trips = require('./routes/trips')
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
   next()
 })
 
@@ -38,4 +42,5 @@ app.use('/api/trips', trips)
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions))
 
 const port = process.env.PORT || 8080
+
 app.listen(port)

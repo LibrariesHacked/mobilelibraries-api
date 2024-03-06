@@ -1,4 +1,5 @@
 const pool = require('../helpers/database')
+
 const iCalHelper = require('../helpers/ical')
 const pdfHelper = require('../helpers/pdf')
 const moment = require('moment')
@@ -27,7 +28,6 @@ const viewFields = [
   'longitude',
   'latitude'
 ]
-const tableFields = ['name', 'community', 'address', 'timetable']
 
 module.exports.getStops = async (
   organisationIds,
@@ -72,7 +72,8 @@ module.exports.getStops = async (
       }
     })
 
-    if (viewFields.indexOf(sort) !== -1) orderbyQuery = `order by ${sort} ${direction}`
+    if (viewFields.indexOf(sort) !== -1)
+      orderbyQuery = `order by ${sort} ${direction}`
     params = params.map(p => p[1]) // Change params array just to values.
 
     if (organisations.length > 0) {
@@ -124,7 +125,7 @@ module.exports.getStops = async (
         `round(st_distance(st_transform(st_setsrid(st_makepoint($${longitudeParam}, $${latitudeParam}), 4326), 27700), st_transform(st_setsrid(st_makepoint(longitude, latitude), 4326), 27700))) as distance`
       )
       params = params.concat([longitude, latitude, distance])
-      
+
       if (sort === 'distance') orderbyQuery = `order by distance ${direction}`
     }
 
@@ -268,35 +269,4 @@ module.exports.getTileData = async (x, y, z) => {
       tile = rows[0].fn_stops_mvt
   } catch (e) {}
   return tile
-}
-
-module.exports.createStop = async stop => {
-  try {
-    const insert_values = tableFields
-      .map((f, idx) => '$' + (idx + 1))
-      .join(', ')
-
-    const query = `insert into mobile (${tableFields.join(
-      ', '
-    )}) values(${insert_values})`
-    const params = tableFields.map(f => (stop[f] ? stop[f] : null))
-    await pool.query(query, params)
-  } catch (e) {}
-  return stop
-}
-
-module.exports.updateStop = async (id, stop) => {
-  const sets = []
-  const params = [id]
-  Object.keys(stop).forEach(key => {
-    if (tableFields.indexOf(key) !== -1) {
-      params.push(stop[key])
-      sets.push(`${key}=$${params.length}`)
-    }
-  })
-  try {
-    const query = `update stop set ${sets.join(',')} where id = $1`
-    await pool.query(query, params)
-  } catch (e) {}
-  return stop
 }
