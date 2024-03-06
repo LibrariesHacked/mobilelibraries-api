@@ -1,4 +1,5 @@
 const pool = require('../helpers/database')
+
 const viewFields = [
   'id',
   'organisation_id',
@@ -7,6 +8,7 @@ const viewFields = [
   'number_routes',
   'number_stops'
 ]
+
 const viewLocationFields = [
   'mobile_id',
   'current_stop_id',
@@ -62,11 +64,10 @@ module.exports.getMobileById = async id => {
 
 module.exports.getMobileLocations = async () => {
   let locations = []
-  const updateQuery = 'select fn_updates()'
   const getQuery =
     'select ' + viewLocationFields.join(', ') + ' from vw_mobiles_location'
   try {
-    await pool.query(updateQuery)
+    await pool.query('select fn_updates()')
     const { rows } = await pool.query(getQuery)
     locations = rows
     locations.forEach(location => {
@@ -90,30 +91,4 @@ module.exports.getMobilesWithinDistance = async (
     mobiles = rows
   } catch (e) {}
   return mobiles
-}
-
-module.exports.createMobile = async mobile => {
-  try {
-    const query =
-      'insert into mobile (organisation_id, name, timetable) values($1, $2, $3)'
-    const params = [mobile.organisation_id, mobile.name, mobile.timetable]
-    await pool.query(query, params)
-  } catch (e) {}
-  return mobile
-}
-
-module.exports.updateMobile = async (id, mobile) => {
-  const sets = []
-  const params = [id]
-  Object.keys(mobile).forEach(key => {
-    if (['organisation_id', 'name', 'timetable'].indexOf(key) !== -1) {
-      params.push(mobile[key])
-      sets.push(key + '=' + '$' + params.length)
-    }
-  })
-  try {
-    const query = 'update mobile set ' + sets.join(',') + ' where id = $1'
-    await pool.query(query, params)
-  } catch (e) {}
-  return mobile
 }

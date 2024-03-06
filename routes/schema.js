@@ -6,45 +6,36 @@ const schema = require('../models/schema')
 const { Parser } = require('json2csv')
 const csvtojson = require('csvtojson')
 
-router.get('/', cache(3600), function (req, res, next) {
+router.get('/', cache(3600), async (req, res) => {
+  const schemaData = await schema.getData()
   if (req.accepts('text/csv')) {
     const fields = schema.getViewFields()
     const parser = new Parser({ fields })
-    schema.getData().then(data => { res.send(parser.parse(data)) })
+    res.send(parser.parse(schemaData))
   } else {
-    schema.getData().then(data => { res.json(data) })
+    res.json(schemaData)
   }
 })
 
-router.get('/:organisation_name', cache(3600), function (req, res, next) {
+router.get('/:organisation_name', cache(3600), async (req, res) => {
   const organisationName = req.params.organisation_name
+  const schemaData = await schema.getData(organisationName)
   if (req.accepts('text/csv')) {
     const fields = schema.getViewFields()
     const parser = new Parser({ fields })
-    schema.getData(organisationName).then(data => { res.send(parser.parse(data)) })
+    res.send(parser.parse(schemaData))
   } else {
-    schema.getData(organisationName).then(data => { res.json(data) })
+    res.json(schemaData)
   }
 })
 
-router.post('/', function (req, res, next) {
+router.post('/', async (req, res) => {
+  let csvData = req.body
   if (req.is('text/csv')) {
-    csvtojson()
-      .fromString(req.body)
-      .then((schemaArr) => {
-        schema.createData(schemaArr).then(() => { res.status(201).json({ rows: schemaArr.length }) })
-      })
-  } else {
-    schema.createData(req.body).then(() => { res.status(201).json({ rows: req.body.length }) })
+    csvData = await csvtojson().fromString(req.body)
   }
-})
-
-router.put('/:organisation_name', function (req, res, next) {
-
-})
-
-router.delete('/:organisation_name', function (req, res, next) {
-
+  await schema.createData(csvData)
+  res.status(201).json({ rows: csvData.length })
 })
 
 module.exports = router
