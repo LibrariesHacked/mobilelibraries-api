@@ -12,12 +12,12 @@
   "openapi": "3.0.0",
   "paths": {
     "/api/mobiles": {
-      "summary": "Mobile libraries",
+      "summary": "Get mobile libraries",
       "get": {
         "tags": [
           "mobiles"
         ],
-        "description": "Return all mobiles",
+        "description": "Get all mobile libraries",
         "parameters": [
           {
             "name": "organisation_id",
@@ -34,24 +34,10 @@
             "description": "A list of mobiles"
           }
         }
-      },
-      "post": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Create a new mobile library",
-        "responses": {
-          "201": {
-            "description": "Mobile added"
-          },
-          "422": {
-            "description": "Validation error"
-          }
-        }
       }
     },
     "/api/mobiles/{id}": {
-      "summary": "A mobile library",
+      "summary": "Get a mobile library",
       "get": {
         "tags": [
           "mobiles"
