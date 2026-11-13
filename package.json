@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/LibrariesHacked/mobilelibraries-api#readme",
   "dependencies": {
-    "body-parser": "^2.3.0",
+    "body-parser": "^2.4.0",
     "csvtojson": "^2.0.14",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
