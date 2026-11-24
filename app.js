@@ -46,7 +46,7 @@ app.use('/api/stops', stops)
 app.use('/api/trips', trips)
 
 // 404 handler for unhandled /api/* routes
-app.all('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
   res.status(404).json({
     errors: [{ status: '404', title: 'Not Found', detail: `Cannot ${req.method} ${req.originalUrl}` }]
   })
@@ -56,7 +56,7 @@ app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions))
 
 const port = process.env.PORT || 8080
 
-if (require.main === module) {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Mobile libraries API running on port ${port}`)
   })

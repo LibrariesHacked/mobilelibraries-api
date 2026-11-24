@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test'
 const app = require('../app')
 const pool = require('../helpers/database')
 const assert = require('assert')
