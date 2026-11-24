@@ -4,15 +4,10 @@ const cache = require('../middleware/cache')
 const mobileModel = require('../models/mobile')
 
 router.get('/', cache(3600), async (req, res) => {
-  if (req.query.organisation_id) {
-    const mobiles = await mobileModel.getMobilesByOrganisationId(
-      req.query.organisation_id
-    )
-    res.json(mobiles)
-  } else {
-    const mobiles = await mobileModel.getMobiles()
-    res.json(mobiles)
-  }
+  const localAuthorityId = req.query.local_authority_id || null
+
+  const mobiles = await mobileModel.getMobiles(localAuthorityId)
+  res.json(mobiles)
 })
 
 router.get('/locations', cache(30), async (req, res) => {

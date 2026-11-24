@@ -1,739 +1,1873 @@
 {
+  "openapi": "3.0.3",
   "info": {
     "title": "Mobile Libraries API",
-    "version": "1.0.0",
-    "description": "API to retrieve data about mobile library stops and timetables.",
+    "version": "2.0.0",
+    "description": "Comprehensive REST API to retrieve UK mobile library services, timetables, routes, stops, road trips, live locations, and data schema conforming to the national schema.librarydata.uk specification.",
     "contact": {
       "name": "Libraries Hacked",
       "url": "https://www.librarieshacked.org",
       "email": "info@librarieshacked.org"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "openapi": "3.0.0",
+  "servers": [
+    {
+      "url": "https://api.mobilelibraries.org",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "localauthorities",
+      "description": "UK local library authorities operating mobile library services"
+    },
+    {
+      "name": "mobiles",
+      "description": "Mobile library vehicles and real-time/estimated locations"
+    },
+    {
+      "name": "routes",
+      "description": "Regular recurring service routes and schedules for mobile libraries"
+    },
+    {
+      "name": "stops",
+      "description": "Individual stop locations, visiting dates/times, PDF flyers, ICS calendars, and vector tiles"
+    },
+    {
+      "name": "trips",
+      "description": "Driving trips between consecutive stops, geometry, and vector tiles"
+    },
+    {
+      "name": "schema",
+      "description": "Import and export data conforming to the official schema.librarydata.uk mobile library stops v2.0.0 specification"
+    }
+  ],
   "paths": {
-    "/api/mobiles": {
-      "summary": "Mobile libraries",
+    "/api/localauthorities": {
       "get": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Return all mobiles",
+        "tags": ["localauthorities"],
+        "summary": "List all local authorities",
+        "description": "Returns a list of all local library authorities currently operating mobile library services in the database.",
+        "operationId": "getLocalAuthorities",
+        "responses": {
+          "200": {
+            "description": "A list of local authorities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocalAuthority"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/localauthorities/{id}": {
+      "get": {
+        "tags": ["localauthorities"],
+        "summary": "Get local authority by ID or GSS code",
+        "description": "Returns details of a specific local authority identified by either its internal numeric database ID or its 9-character GSS code (e.g. S12000041, E06000004).",
+        "operationId": "getLocalAuthorityById",
         "parameters": [
           {
-            "name": "organisation_id",
-            "description": "Numeric ID of the organisation the mobile is run by",
-            "in": "query",
-            "required": false,
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric database ID or 9-character GSS code",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "example": "S12000041"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of mobiles"
+            "description": "Local authority details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocalAuthority"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Local authority not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
-      },
-      "post": {
-        "tags": [
-          "mobiles"
+      }
+    },
+    "/api/mobiles": {
+      "get": {
+        "tags": ["mobiles"],
+        "summary": "List mobile library vehicles",
+        "description": "Returns all mobile library vehicles, optionally filtered by local authority ID.",
+        "operationId": "getMobiles",
+        "parameters": [
+          {
+            "name": "local_authority_id",
+            "in": "query",
+            "required": false,
+            "description": "Numeric ID of the local authority to filter by",
+            "schema": {
+              "type": "integer",
+              "example": 44
+            }
+          }
         ],
-        "description": "Create a new mobile library",
         "responses": {
-          "201": {
-            "description": "Mobile added"
-          },
-          "422": {
-            "description": "Validation error"
+          "200": {
+            "description": "A list of mobile library vehicles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Mobile"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/mobiles/{id}": {
-      "summary": "A mobile library",
       "get": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Returns a mobile library",
+        "tags": ["mobiles"],
+        "summary": "Get mobile library vehicle by ID",
+        "description": "Returns details of a specific mobile library vehicle.",
+        "operationId": "getMobileById",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the mobile",
             "in": "path",
             "required": true,
+            "description": "Numeric ID of the mobile library vehicle",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A mobile"
+            "description": "Mobile library details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mobile"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Update a mobile library",
-        "responses": {
-          "200": {
-            "description": "Mobile updated"
-          },
-          "422": {
-            "description": "Validation error"
+            "description": "Mobile library not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/mobiles/locations": {
-      "summary": "Mobile library locations",
       "get": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Return all mobile library locations",
+        "tags": ["mobiles"],
+        "summary": "Get live/estimated mobile library locations",
+        "description": "Returns current, previous, and upcoming stops with interpolated route sections for vehicles active on service today.",
+        "operationId": "getMobileLocations",
         "responses": {
           "200": {
-            "description": "A list of mobile locations"
+            "description": "Current mobile library locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MobileLocation"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/mobiles/nearest": {
-      "summary": "Mobile libraries within distance of location",
       "get": {
-        "tags": [
-          "mobiles"
-        ],
-        "description": "Return all mobile libraries within a certain distance",
+        "tags": ["mobiles"],
+        "summary": "Find mobiles nearest to coordinates",
+        "description": "Finds nearest mobile libraries with stops within a given distance from specified WGS84 coordinates.",
+        "operationId": "getNearestMobiles",
         "parameters": [
           {
             "name": "longitude",
-            "description": "Longitude that the mobile libraries should be near to",
             "in": "query",
             "required": true,
+            "description": "Longitude in WGS84 decimal degrees",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": -2.99774
             }
           },
           {
             "name": "latitude",
-            "description": "Latitude that the mobile libraries should be near to",
             "in": "query",
             "required": true,
+            "description": "Latitude in WGS84 decimal degrees",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": 56.50186
             }
           },
           {
             "name": "distance",
-            "description": "Distance in metres to search for mobile libraries",
             "in": "query",
             "required": true,
+            "description": "Search distance in metres (British National Grid projection)",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 10000
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of mobile libraries with nearest stop information"
-          }
-        }
-      }
-    },
-    "/api/organisations": {
-      "summary": "All mobile library organisations",
-      "get": {
-        "tags": [
-          "organisations"
-        ],
-        "description": "Return all organisations",
-        "responses": {
-          "200": {
-            "description": "A list of organisations"
-          }
-        }
-      }
-    },
-    "/api/organisations/{id}": {
-      "summary": "A mobile library organisation",
-      "get": {
-        "tags": [
-          "organisations"
-        ],
-        "description": "Return an organisation",
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Numeric ID of the organisation",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
+            "description": "Nearest mobile libraries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NearestMobile"
+                  }
+                }
+              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "An organisation"
-          },
-          "404": {
-            "description": "Not found"
           }
         }
       }
     },
     "/api/routes": {
-      "summary": "Mobile library routes",
       "get": {
-        "tags": [
-          "routes"
-        ],
-        "description": "Return all mobile library routes",
+        "tags": ["routes"],
+        "summary": "List mobile library routes",
+        "description": "Returns mobile library service routes, optionally filtered by local authority ID and/or mobile vehicle ID.",
+        "operationId": "getRoutes",
         "parameters": [
           {
-            "name": "organisation_id",
-            "description": "Numeric ID of the organisation the route is run by",
+            "name": "local_authority_id",
             "in": "query",
             "required": false,
+            "description": "Numeric ID of the local authority to filter by",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 44
+            }
+          },
+          {
+            "name": "mobile_id",
+            "in": "query",
+            "required": false,
+            "description": "Numeric ID of the mobile vehicle to filter by",
+            "schema": {
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of routes"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "routes"
-        ],
-        "description": "Create a new mobile library route",
-        "responses": {
-          "201": {
-            "description": "Route added"
-          },
-          "422": {
-            "description": "Validation error"
+            "description": "List of routes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Route"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/routes/{id}": {
-      "summary": "A mobile library route",
       "get": {
-        "tags": [
-          "routes"
-        ],
-        "description": "Returns a mobile library route",
+        "tags": ["routes"],
+        "summary": "Get route by ID",
+        "description": "Returns details of a specific route by ID.",
+        "operationId": "getRouteById",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the route",
             "in": "path",
             "required": true,
+            "description": "Numeric ID of the route",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A route"
+            "description": "Route details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Route"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "routes"
-        ],
-        "description": "Update a mobile library route",
-        "responses": {
-          "200": {
-            "description": "Route updated"
-          },
-          "422": {
-            "description": "Validation error"
+            "description": "Route not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops": {
-      "summary": "Mobile library stops",
       "get": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Return all stops",
+        "tags": ["stops"],
+        "summary": "Search and filter stops",
+        "description": "Returns mobile library stops with extensive filtering, radial proximity search, pagination, and sorting. Supports both JSON and GeoJSON FeatureCollection output via the Accept header.",
+        "operationId": "getStops",
         "parameters": [
           {
-            "name": "organisation_ids",
-            "description": "Pipe separated list of organisation IDs",
+            "name": "local_authority_ids",
             "in": "query",
             "required": false,
+            "description": "Pipe-separated list of local authority IDs (e.g. `44|56`)",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "44"
+            }
+          },
+          {
+            "name": "local_authority_codes",
+            "in": "query",
+            "required": false,
+            "description": "Pipe-separated list of 9-character GSS codes (e.g. `S12000041|E06000004`)",
+            "schema": {
+              "type": "string",
+              "example": "S12000041"
             }
           },
           {
             "name": "mobile_ids",
-            "description": "Pipe separated list of mobile IDs",
             "in": "query",
             "required": false,
+            "description": "Pipe-separated list of mobile vehicle IDs",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "1"
             }
           },
           {
             "name": "route_ids",
-            "description": "Pipe separated list of route IDs",
             "in": "query",
             "required": false,
+            "description": "Pipe-separated list of route IDs",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "5"
             }
           },
           {
             "name": "longitude",
-            "description": "Longitude of the coordinates used to filter results",
             "in": "query",
             "required": false,
+            "description": "Longitude in WGS84 decimal degrees for radial search (used with latitude and distance)",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": -2.99774
             }
           },
           {
             "name": "latitude",
-            "description": "Latitude of the coordinates used to filter results",
             "in": "query",
             "required": false,
+            "description": "Latitude in WGS84 decimal degrees for radial search (used with longitude and distance)",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": 56.50186
             }
           },
           {
             "name": "distance",
-            "description": "Distance in metres of the radius used to filter stops",
             "in": "query",
             "required": false,
+            "description": "Radial distance in metres from the specified coordinates",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 5000
             }
           },
           {
             "name": "limit",
-            "description": "Number of results to return",
             "in": "query",
             "required": false,
+            "description": "Maximum number of stops to return",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "default": 1000,
+              "example": 50
             }
           },
           {
             "name": "page",
-            "description": "The page to return (for paged results)",
             "in": "query",
             "required": false,
+            "description": "Page number for pagination",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "default": 1,
+              "example": 1
             }
           },
           {
             "name": "sort",
-            "description": "The column to sort by",
             "in": "query",
             "required": false,
+            "description": "Field to sort results by (e.g. `id`, `name`, `community`, `distance`)",
             "schema": {
-              "type": "integer"
+              "type": "string",
+              "default": "id",
+              "example": "name"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "description": "Sort order direction (`asc` or `desc`)",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of stops"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Create a new mobile library stop",
-        "responses": {
-          "201": {
-            "description": "Mobile library stop added"
+            "description": "List of stops or GeoJSON FeatureCollection",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total matching count across all pages",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-Page": {
+                "description": "Current page number",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Stop"
+                  }
+                }
+              },
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoJsonPointFeatureCollection"
+                }
+              }
+            }
           },
-          "422": {
-            "description": "Validation error"
+          "404": {
+            "description": "No stops found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops/nearest": {
-      "summary": "Nearest mobile library stops to a location",
       "get": {
-        "tags": [
-          "stops",
-          "nearest"
-        ],
-        "description": "Return stops nearest to a location",
+        "tags": ["stops"],
+        "summary": "Find nearest stops",
+        "description": "Returns the nearest mobile library stops to given coordinates ordered by distance.",
+        "operationId": "getNearestStops",
         "parameters": [
           {
             "name": "longitude",
-            "description": "Longitude of the coordinates used for nearest matching",
             "in": "query",
             "required": true,
+            "description": "Longitude in WGS84 decimal degrees",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": -2.99774
             }
           },
           {
             "name": "latitude",
-            "description": "Latitude of the coordinates used for nearest matching",
             "in": "query",
             "required": true,
+            "description": "Latitude in WGS84 decimal degrees",
             "schema": {
-              "type": "string"
+              "type": "number",
+              "format": "double",
+              "example": 56.50186
             }
           },
           {
             "name": "limit",
-            "description": "Number of results to return",
             "in": "query",
             "required": false,
+            "description": "Number of nearest stops to return",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "default": 1,
+              "example": 5
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of stops"
+            "description": "Nearest stops",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NearestStop"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No stops found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops/{id}": {
-      "summary": "A mobile library stop",
       "get": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Returns a mobile library stop",
+        "tags": ["stops"],
+        "summary": "Get stop by ID",
+        "description": "Returns details of a specific mobile library stop by ID.",
+        "operationId": "getStopById",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the stop",
             "in": "path",
             "required": true,
+            "description": "Numeric stop ID",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A mobile library stop"
+            "description": "Stop details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stop"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Update a mobile library stop",
-        "responses": {
-          "200": {
-            "description": "Mobile library stop updated"
-          },
-          "422": {
-            "description": "Validation error"
+            "description": "Stop not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops/{id}/pdf": {
-      "summary": "A mobile library stop as PDF",
       "get": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Returns a mobile library stop PDF file",
+        "tags": ["stops"],
+        "summary": "Download printable PDF flyer",
+        "description": "Generates and downloads a printable timetable flyer for the stop in PDF format, including stop details, upcoming visit dates, and QR code.",
+        "operationId": "getStopPdf",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the stop",
             "in": "path",
             "required": true,
+            "description": "Numeric stop ID",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A mobile library stop PDF"
+            "description": "PDF document",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
+            "description": "Stop not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops/{id}/ics": {
-      "summary": "A mobile library stop in iCalendar format",
       "get": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Returns a mobile library stop iCalendar file",
+        "tags": ["stops"],
+        "summary": "Download iCalendar (.ics) schedule",
+        "description": "Generates and downloads an iCalendar (.ics) calendar file containing the schedule of upcoming mobile library visits for this stop.",
+        "operationId": "getStopCalendar",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the stop",
             "in": "path",
             "required": true,
+            "description": "Numeric stop ID",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A mobile library stop"
+            "description": "iCalendar event stream",
+            "content": {
+              "text/calendar": {
+                "schema": {
+                  "type": "string",
+                  "example": "BEGIN:VCALENDAR\nVERSION:2.0\n...\nEND:VCALENDAR"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
+            "description": "Stop not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/stops/{z}/{x}/{y}.mvt": {
-      "summary": "Vector tile service for mobile library stops",
       "get": {
-        "tags": [
-          "stops"
-        ],
-        "description": "Return stops within an x, y and zoom level",
+        "tags": ["stops"],
+        "summary": "Get Mapbox Vector Tile for stops",
+        "description": "Returns a Mapbox Vector Tile (MVT) containing stop point geometries and metadata for map tiles at zoom level z and tile coordinates x, y.",
+        "operationId": "getStopsTile",
         "parameters": [
           {
-            "name": "x",
-            "description": "X coordinate",
+            "name": "z",
             "in": "path",
             "required": true,
+            "description": "Zoom level",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "x",
+            "in": "path",
+            "required": true,
+            "description": "Tile X coordinate",
+            "schema": {
+              "type": "integer",
+              "example": 509
             }
           },
           {
             "name": "y",
-            "description": "Y coordinate",
             "in": "path",
             "required": true,
+            "description": "Tile Y coordinate",
             "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "z",
-            "description": "Zoom level",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 328
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Mobile stops vector tile"
+            "description": "Vector tile binary data",
+            "content": {
+              "application/x-protobuf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           },
           "204": {
-            "description": "No vector content"
-          }
-        }
-      }
-    },
-    "/api/trips/{z}/{x}/{y}.mvt": {
-      "summary": "Vector tile service for mobile library trips",
-      "get": {
-        "tags": [
-          "trips"
-        ],
-        "description": "Return trips within an x, y and zoom level",
-        "parameters": [
-          {
-            "name": "x",
-            "description": "X coordinate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "y",
-            "description": "Y coordinate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "z",
-            "description": "Zoom level",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Mobile trip vector tile"
-          },
-          "204": {
-            "description": "No vector content"
+            "description": "Tile contains no stops"
           }
         }
       }
     },
     "/api/trips": {
-      "summary": "Mobile library trips",
       "get": {
-        "tags": [
-          "trips"
-        ],
-        "description": "Return all mobile library trips",
-        "parameters": [],
+        "tags": ["trips"],
+        "summary": "List driving trips between stops",
+        "description": "Returns driving route segments between consecutive mobile library stops including road geometry, distance, and duration.",
+        "operationId": "getTrips",
         "responses": {
           "200": {
-            "description": "A list of trips"
+            "description": "List of trips or GeoJSON LineString FeatureCollection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Trip"
+                  }
+                }
+              },
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoJsonLineFeatureCollection"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/trips/{id}": {
-      "summary": "A trip between two mobile library stops",
       "get": {
-        "tags": [
-          "trips"
-        ],
-        "description": "Returns a mobile library trip",
+        "tags": ["trips"],
+        "summary": "Get trip by ID",
+        "description": "Returns details of a specific driving trip by ID.",
+        "operationId": "getTripById",
         "parameters": [
           {
             "name": "id",
-            "description": "Numeric ID of the trip",
             "in": "path",
             "required": true,
+            "description": "Numeric trip ID",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A trip"
+            "description": "Trip details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trip"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not found"
+            "description": "Trip not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trips/{z}/{x}/{y}.mvt": {
+      "get": {
+        "tags": ["trips"],
+        "summary": "Get Mapbox Vector Tile for trips",
+        "description": "Returns a Mapbox Vector Tile (MVT) containing driving trip linestrings for map tiles at zoom level z and tile coordinates x, y.",
+        "operationId": "getTripsTile",
+        "parameters": [
+          {
+            "name": "z",
+            "in": "path",
+            "required": true,
+            "description": "Zoom level",
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "x",
+            "in": "path",
+            "required": true,
+            "description": "Tile X coordinate",
+            "schema": {
+              "type": "integer",
+              "example": 509
+            }
+          },
+          {
+            "name": "y",
+            "in": "path",
+            "required": true,
+            "description": "Tile Y coordinate",
+            "schema": {
+              "type": "integer",
+              "example": 328
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vector tile binary data",
+            "content": {
+              "application/x-protobuf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Tile contains no trips"
           }
         }
       }
     },
     "/api/schema": {
-      "summary": "Get the open data schema formatted data for mobile libraries",
       "get": {
-        "tags": [
-          "schema"
-        ],
-        "description": "Return all mobile library data",
+        "tags": ["schema"],
+        "summary": "Export all stops in national schema format",
+        "description": "Exports all mobile library stop schedules conforming to schema.librarydata.uk/mobile-library-stops.json (v2.0.0). Supports CSV and JSON formats.",
+        "operationId": "getSchemaData",
         "responses": {
           "200": {
-            "description": "A list of mobile library data in a format conforming to the schema",
+            "description": "Full dataset conforming to v2.0.0 schema",
             "content": {
-              "text/csv": {},
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SchemaStop"
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "example": "local_authority,local_authority_code,mobile_name,route,community,stop,address,postcode,geox,geoy,day,type,arrival,departure,frequency,start,end,exceptions,timetable\nAngus,S12000041,Van 1 - Isla,Van 1 - Isla - Week 1 - Monday,Wellbank,Gagiebank,\"Gagiebank, Wellbank, Angus\",DD5 3PT,-2.86258,56.52041,Monday,Public,10:30:00,11:00:00,FREQ=WEEKLY;INTERVAL=2,2026-10-04,2027-03-31,,https://angusalive.scot/..."
+                }
+              }
             }
           }
         }
       },
       "post": {
-        "tags": [
-          "schema"
-        ],
-        "description": "Add a new set of mobile library data to a staging table",
+        "tags": ["schema"],
+        "summary": "Import stops dataset into staging",
+        "description": "Uploads and imports mobile library stop schedules conforming to schema.librarydata.uk/mobile-library-stops.json (v2.0.0) into staging, automatically updating mobiles, routes, stops, and schedules.",
+        "operationId": "createSchemaData",
         "requestBody": {
-          "description": "Mobile library data in mobile library data schema format",
           "required": true,
+          "description": "Array of stop records conforming to the v2.0.0 schema or equivalent CSV text",
           "content": {
-            "text/csv": {
-              "type": "string"
-            },
             "application/json": {
-              "type": "array"
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SchemaStop"
+                }
+              }
+            },
+            "text/csv": {
+              "schema": {
+                "type": "string"
+              }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Mobile library data added to staging table"
+            "description": "Stops successfully imported",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rows": {
+                      "type": "integer",
+                      "description": "Number of rows processed",
+                      "example": 42
+                    }
+                  }
+                }
+              }
+            }
           },
-          "422": {
-            "description": "Validation error"
+          "400": {
+            "description": "Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Import processing error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/schema/{organisation_name}": {
-      "summary": "Get the schema formatted data for a mobile library organisation",
+    "/api/schema/{local_authority}": {
       "get": {
-        "tags": [
-          "schema"
-        ],
-        "description": "Return mobile library data for specified organisation",
+        "tags": ["schema"],
+        "summary": "Export stops for a local authority in national schema format",
+        "description": "Exports mobile library stop schedules for a specific local authority (by authority name or 9-character GSS code) conforming to schema.librarydata.uk/mobile-library-stops.json (v2.0.0).",
+        "operationId": "getSchemaDataByLocalAuthority",
         "parameters": [
           {
-            "name": "organisation_name",
-            "description": "Name of the organisation",
+            "name": "local_authority",
             "in": "path",
             "required": true,
+            "description": "Name or 9-character GSS code of the local authority",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "Angus"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of mobile library data in a format conforming to the schema",
+            "description": "Authority stops conforming to v2.0.0 schema",
             "content": {
-              "text/csv": {},
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SchemaStop"
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
       }
     }
   },
-  "components": {},
-  "tags": []
+  "components": {
+    "schemas": {
+      "LocalAuthority": {
+        "type": "object",
+        "description": "A UK local library authority running mobile library services",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique database ID",
+            "example": 44
+          },
+          "country": {
+            "type": "string",
+            "description": "Country name (England, Scotland, Wales, Northern Ireland)",
+            "example": "Scotland"
+          },
+          "local_authority_code": {
+            "type": "string",
+            "description": "Official 9-character ONS/GSS administrative code",
+            "example": "S12000041"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the local authority",
+            "example": "Angus"
+          },
+          "timetable": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the service timetable page or document",
+            "example": "https://angusalive.scot/libraries/mobile-library/"
+          },
+          "website": {
+            "type": "string",
+            "nullable": true,
+            "description": "Official website URL for the local authority or library service",
+            "example": "https://angusalive.scot/libraries/mobile-library/"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Contact email address",
+            "example": "libraries@angusalive.scot"
+          },
+          "colour": {
+            "type": "string",
+            "nullable": true,
+            "description": "Hex colour code for branding and map visualization",
+            "example": "#008672"
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the authority logo image",
+            "example": null
+          },
+          "number_mobiles": {
+            "type": "string",
+            "description": "Number of mobile library vehicles operated",
+            "example": "2"
+          },
+          "number_routes": {
+            "type": "string",
+            "description": "Number of active routes",
+            "example": "16"
+          },
+          "number_stops": {
+            "type": "string",
+            "description": "Number of physical stop locations",
+            "example": "119"
+          }
+        },
+        "required": ["id", "country", "local_authority_code", "name"]
+      },
+      "Mobile": {
+        "type": "object",
+        "description": "A mobile library vehicle operated by a local authority",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique mobile library ID",
+            "example": 1
+          },
+          "local_authority_id": {
+            "type": "integer",
+            "description": "ID of the operating local authority",
+            "example": 44
+          },
+          "local_authority_code": {
+            "type": "string",
+            "description": "GSS code of the operating local authority",
+            "example": "S12000041"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name or identifier of the mobile library vehicle",
+            "example": "Van 1 - Isla"
+          },
+          "timetable": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the vehicle timetable document",
+            "example": null
+          },
+          "number_routes": {
+            "type": "string",
+            "description": "Number of routes served by this vehicle",
+            "example": "8"
+          },
+          "number_stops": {
+            "type": "string",
+            "description": "Number of stops served by this vehicle",
+            "example": "55"
+          }
+        },
+        "required": ["id", "local_authority_id", "local_authority_code", "name"]
+      },
+      "MobileLocation": {
+        "type": "object",
+        "description": "Estimated live location and stop progress of a mobile library vehicle",
+        "properties": {
+          "mobile_id": {
+            "type": "integer",
+            "description": "ID of the mobile library vehicle",
+            "example": 1
+          },
+          "current_stop_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID of the stop the vehicle is currently at (if stopped)",
+            "example": 12
+          },
+          "current_stop_departure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Scheduled departure time from current stop",
+            "example": "2026-11-24T14:30:00"
+          },
+          "current_stop_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of current stop",
+            "example": "High Street"
+          },
+          "previous_stop_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID of previous stop",
+            "example": 11
+          },
+          "previous_stop_departure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Departure time from previous stop",
+            "example": "2026-11-24T14:00:00"
+          },
+          "previous_stop_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of previous stop",
+            "example": "Village Hall"
+          },
+          "next_stop_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID of next scheduled stop",
+            "example": 13
+          },
+          "next_stop_arrival": {
+            "type": "string",
+            "nullable": true,
+            "description": "Expected arrival time at next stop",
+            "example": "2026-11-24T15:00:00"
+          },
+          "next_stop_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of next stop",
+            "example": "Primary School"
+          },
+          "geox": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Estimated vehicle longitude (WGS84)",
+            "example": -2.99774
+          },
+          "geoy": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Estimated vehicle latitude (WGS84)",
+            "example": 56.50186
+          },
+          "route_section": {
+            "type": "object",
+            "nullable": true,
+            "description": "GeoJSON geometry of the estimated current route section",
+            "example": null
+          },
+          "update_type": {
+            "type": "string",
+            "nullable": true,
+            "description": "Type of location update (e.g. estimated or telemetry)",
+            "example": "estimate"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Timestamp of the location calculation",
+            "example": "2026-11-24T14:25:00Z"
+          }
+        },
+        "required": ["mobile_id"]
+      },
+      "NearestMobile": {
+        "type": "object",
+        "description": "Nearest mobile library result",
+        "properties": {
+          "mobile_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "stop_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "stop_name": {
+            "type": "string",
+            "example": "Ashton Terrace"
+          },
+          "stop_distance": {
+            "type": "integer",
+            "description": "Distance to the nearest stop in metres",
+            "example": 1420
+          }
+        },
+        "required": ["mobile_id", "stop_id", "stop_name", "stop_distance"]
+      },
+      "Route": {
+        "type": "object",
+        "description": "A recurring service route operated by a mobile library vehicle",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique route ID",
+            "example": 1
+          },
+          "local_authority_id": {
+            "type": "integer",
+            "description": "ID of the local authority",
+            "example": 44
+          },
+          "local_authority_code": {
+            "type": "string",
+            "description": "GSS code of the local authority",
+            "example": "S12000041"
+          },
+          "mobile_id": {
+            "type": "integer",
+            "description": "ID of the assigned mobile library vehicle",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Route name",
+            "example": "Van 1 - Isla - Week 1 - Monday"
+          },
+          "frequency": {
+            "type": "string",
+            "description": "iCalendar RRULE recurrence frequency rule",
+            "example": "FREQ=WEEKLY;INTERVAL=2"
+          },
+          "timetable": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the timetable for this route",
+            "example": "https://angusalive.scot/wp-content/uploads/2026/10/Mobile-Library-Timetable-Aut-2026-Spring-2027-.pdf"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "description": "Service schedule start date",
+            "example": "2026-10-04"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Service schedule end date",
+            "example": "2027-03-31"
+          },
+          "number_stops": {
+            "type": "string",
+            "description": "Number of stops along this route",
+            "example": "9"
+          }
+        },
+        "required": ["id", "local_authority_id", "local_authority_code", "mobile_id", "name", "frequency", "start"]
+      },
+      "Stop": {
+        "type": "object",
+        "description": "A physical mobile library stop location and schedule",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique stop ID",
+            "example": 1
+          },
+          "route_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs of routes that serve this stop",
+            "example": [5]
+          },
+          "route_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of routes that serve this stop",
+            "example": ["Van 1 - Isla - Week 2 - Monday"]
+          },
+          "mobile_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs of mobile vehicles that visit this stop",
+            "example": [1]
+          },
+          "mobile_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of mobile vehicles that visit this stop",
+            "example": ["Van 1 - Isla"]
+          },
+          "local_authority_id": {
+            "type": "integer",
+            "description": "ID of operating local authority",
+            "example": 44
+          },
+          "local_authority_name": {
+            "type": "string",
+            "description": "Name of operating local authority",
+            "example": "Angus"
+          },
+          "local_authority_colour": {
+            "type": "string",
+            "nullable": true,
+            "description": "Branding hex colour for the authority",
+            "example": "#008672"
+          },
+          "local_authority_code": {
+            "type": "string",
+            "description": "9-character ONS/GSS administrative code",
+            "example": "S12000041"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the stop location",
+            "example": "Ashton Terrace"
+          },
+          "community": {
+            "type": "string",
+            "nullable": true,
+            "description": "Village, ward, or neighbourhood name",
+            "example": "Strathmartine"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "description": "Full street address of the stop",
+            "example": "Ashton Terrace, Strathmartine, Angus"
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true,
+            "description": "UK postal code",
+            "example": "DD3 0RJ"
+          },
+          "arrival_times": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Scheduled arrival time(s) in HH:mm:ss",
+            "example": ["12:40:00"]
+          },
+          "departure_times": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Scheduled departure time(s) in HH:mm:ss",
+            "example": ["13:00:00"]
+          },
+          "route_start": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start date of current route season",
+            "example": "2026-10-04T23:00:00.000Z"
+          },
+          "route_end": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "End date of current route season",
+            "example": "2027-03-31T23:00:00.000Z"
+          },
+          "route_days": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Days of the week the stop is visited",
+            "example": ["Monday"]
+          },
+          "type": {
+            "type": "string",
+            "description": "Stop access type (Public, Private, Dynamic, Other)",
+            "example": "Public"
+          },
+          "exceptions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "Dates when the stop will not be visited (e.g. bank holidays)",
+            "example": null
+          },
+          "route_frequencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "RRULE recurrence frequency rules for the visiting routes",
+            "example": ["FREQ=WEEKLY;INTERVAL=2"]
+          },
+          "route_schedule": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Calculated timestamps of all scheduled visits for this stop",
+            "example": [
+              "2026-11-30T12:40:00.000Z",
+              "2026-12-14T12:40:00.000Z"
+            ]
+          },
+          "timetable": {
+            "type": "string",
+            "nullable": true,
+            "description": "Web URL to the published timetable",
+            "example": "https://angusalive.scot/wp-content/uploads/2026/10/Mobile-Library-Timetable-Aut-2026-Spring-2027-.pdf"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "description": "WGS84 decimal longitude",
+            "example": -2.99774
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "description": "WGS84 decimal latitude",
+            "example": 56.50186
+          },
+          "distance": {
+            "type": "integer",
+            "description": "Calculated distance in metres if radial coordinates were provided",
+            "example": 250
+          }
+        },
+        "required": ["id", "local_authority_id", "local_authority_code", "name", "longitude", "latitude"]
+      },
+      "NearestStop": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Stop"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "distance": {
+                "type": "integer",
+                "description": "Calculated distance from query point in metres",
+                "example": 350
+              }
+            },
+            "required": ["distance"]
+          }
+        ]
+      },
+      "Trip": {
+        "type": "object",
+        "description": "A road journey connecting two consecutive stops",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique trip ID",
+            "example": 1
+          },
+          "origin_stop_id": {
+            "type": "integer",
+            "description": "ID of the origin stop",
+            "example": 10
+          },
+          "origin_stop_name": {
+            "type": "string",
+            "description": "Name of origin stop",
+            "example": "High Street"
+          },
+          "destination_stop_id": {
+            "type": "integer",
+            "description": "ID of the destination stop",
+            "example": 11
+          },
+          "destination_stop_name": {
+            "type": "string",
+            "description": "Name of destination stop",
+            "example": "School Close"
+          },
+          "distance": {
+            "type": "integer",
+            "description": "Driving distance in metres",
+            "example": 4500
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Estimated driving time in seconds",
+            "example": 420
+          },
+          "route_line": {
+            "type": "object",
+            "description": "GeoJSON LineString geometry of the road route",
+            "example": {
+              "type": "LineString",
+              "coordinates": [
+                [-2.99774, 56.50186],
+                [-2.9965, 56.5022]
+              ]
+            }
+          }
+        },
+        "required": ["id", "origin_stop_id", "destination_stop_id", "distance", "duration", "route_line"]
+      },
+      "SchemaStop": {
+        "type": "object",
+        "description": "Stop record strictly conforming to schema.librarydata.uk/mobile-library-stops.json (v2.0.0)",
+        "properties": {
+          "local_authority": {
+            "type": "string",
+            "description": "Name of the local library authority",
+            "example": "Angus"
+          },
+          "local_authority_code": {
+            "type": "string",
+            "description": "Official 9-character ONS/GSS administrative code",
+            "example": "S12000041"
+          },
+          "mobile_name": {
+            "type": "string",
+            "description": "Name of the mobile vehicle",
+            "example": "Van 1 - Isla"
+          },
+          "route": {
+            "type": "string",
+            "description": "Route name",
+            "example": "Van 1 - Isla - Week 1 - Monday"
+          },
+          "community": {
+            "type": "string",
+            "nullable": true,
+            "description": "Community, settlement, or neighbourhood name",
+            "example": "Wellbank"
+          },
+          "stop": {
+            "type": "string",
+            "description": "Name of the stop location",
+            "example": "Gagiebank"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "description": "Street address",
+            "example": "Gagiebank, Wellbank, Angus"
+          },
+          "postcode": {
+            "type": "string",
+            "nullable": true,
+            "description": "UK postal code",
+            "example": "DD5 3PT"
+          },
+          "geox": {
+            "type": "number",
+            "format": "double",
+            "description": "Longitude in WGS84 decimal degrees",
+            "example": -2.86258
+          },
+          "geoy": {
+            "type": "number",
+            "format": "double",
+            "description": "Latitude in WGS84 decimal degrees",
+            "example": 56.52041
+          },
+          "day": {
+            "type": "string",
+            "description": "Day of the week",
+            "enum": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "example": "Monday"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of stop",
+            "enum": ["Public", "Private", "Dynamic", "Other"],
+            "example": "Public"
+          },
+          "arrival": {
+            "type": "string",
+            "description": "Scheduled arrival time (HH:mm:ss)",
+            "example": "10:30:00"
+          },
+          "departure": {
+            "type": "string",
+            "description": "Scheduled departure time (HH:mm:ss)",
+            "example": "11:00:00"
+          },
+          "frequency": {
+            "type": "string",
+            "description": "Recurrence pattern specified as an iCalendar RRULE",
+            "example": "FREQ=WEEKLY;INTERVAL=2"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "description": "Date from which this schedule begins (YYYY-MM-DD)",
+            "example": "2026-10-04"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date this schedule ends (YYYY-MM-DD)",
+            "example": "2027-03-31"
+          },
+          "exceptions": {
+            "type": "string",
+            "nullable": true,
+            "description": "Comma-separated list of exception dates (YYYY-MM-DD)",
+            "example": ""
+          },
+          "timetable": {
+            "type": "string",
+            "nullable": true,
+            "description": "Web link to published timetable",
+            "example": "https://angusalive.scot/wp-content/uploads/2026/10/Mobile-Library-Timetable-Aut-2026-Spring-2027-.pdf"
+          }
+        },
+        "required": [
+          "local_authority",
+          "local_authority_code",
+          "mobile_name",
+          "route",
+          "stop",
+          "geox",
+          "geoy",
+          "day",
+          "type",
+          "arrival",
+          "departure",
+          "frequency",
+          "start"
+        ]
+      },
+      "GeoJsonPointFeatureCollection": {
+        "type": "object",
+        "description": "GeoJSON FeatureCollection containing Point features",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["FeatureCollection"],
+            "example": "FeatureCollection"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoJsonPointFeature"
+            }
+          }
+        },
+        "required": ["type", "features"]
+      },
+      "GeoJsonPointFeature": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["Feature"],
+            "example": "Feature"
+          },
+          "geometry": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["Point"],
+                "example": "Point"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2,
+                "example": [-2.99774, 56.50186]
+              }
+            },
+            "required": ["type", "coordinates"]
+          },
+          "properties": {
+            "type": "object",
+            "description": "Stop metadata attributes with array values flattened to comma-separated strings"
+          }
+        },
+        "required": ["type", "geometry", "properties"]
+      },
+      "GeoJsonLineFeatureCollection": {
+        "type": "object",
+        "description": "GeoJSON FeatureCollection containing LineString trip features",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["FeatureCollection"],
+            "example": "FeatureCollection"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeoJsonLineFeature"
+            }
+          }
+        },
+        "required": ["type", "features"]
+      },
+      "GeoJsonLineFeature": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["Feature"],
+            "example": "Feature"
+          },
+          "geometry": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["LineString"],
+                "example": "LineString"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "required": ["type", "coordinates"]
+          },
+          "properties": {
+            "type": "object",
+            "description": "Trip metadata properties"
+          }
+        },
+        "required": ["type", "geometry", "properties"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "JSON API standard error object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "404"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Not Found"
+                },
+                "detail": {
+                  "type": "string",
+                  "example": "The requested resource could not be found."
+                }
+              },
+              "required": ["status", "title"]
+            }
+          }
+        },
+        "required": ["errors"]
+      }
+    }
+  }
 }

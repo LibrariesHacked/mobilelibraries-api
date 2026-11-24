@@ -4,7 +4,10 @@ const cache = require('../middleware/cache')
 const routeModel = require('../models/route')
 
 router.get('/', cache(3600), async (req, res) => {
-  const routes = await routeModel.getRoutes(req.query.organisation_id)
+  const localAuthorityId = req.query.local_authority_id || null
+  const mobileId = req.query.mobile_id || null
+
+  const routes = await routeModel.getRoutes(localAuthorityId, mobileId)
   res.json(routes)
 })
 

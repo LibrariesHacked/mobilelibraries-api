@@ -25,18 +25,28 @@ module.exports.createCalendar = data => {
     end: data.end,
     summary: data.summary,
     description: data.description,
-    location: data.location,
     url: data.url
   })
-  event.repeating({
-    freq: recur.freq,
-    interval: recur.interval,
-    until: recur.until.toString()
-  })
-  event.geo({
-    lat: data.latitude,
-    lon: data.longitude
-  })
+  if (data.location) {
+    if (data.latitude != null && data.longitude != null) {
+      event.location({
+        title: data.location,
+        geo: {
+          lat: data.latitude,
+          lon: data.longitude
+        }
+      })
+    } else {
+      event.location(data.location)
+    }
+  }
+  if (data.rrule) {
+    event.repeating({
+      freq: recur.freq,
+      interval: recur.interval,
+      until: recur.until.toString()
+    })
+  }
 
   return cal.toString()
 }

@@ -2,29 +2,35 @@ const express = require('express')
 const router = express.Router()
 
 const cache = require('../middleware/cache')
-
 const stopModel = require('../models/stop')
-
 const utils = require('../helpers/utils')
 
 router.get('/', async function (req, res, next) {
-  const organisationIds = req.query.organisation_ids || null
-  const mobileIds = req.query.mobile_ids || null
-  const routeIds = req.query.route_ids || null
-  const serviceCodes = req.query.service_codes || null
+  const localAuthorityIds =
+    req.query.local_authority_ids ||
+    req.query.local_authority_id ||
+    null
+
+  const localAuthorityCodes =
+    req.query.local_authority_codes ||
+    req.query.local_authority_code ||
+    null
+
+  const mobileIds = req.query.mobile_ids || req.query.mobile_id || null
+  const routeIds = req.query.route_ids || req.query.route_id || null
   const longitude = req.query.longitude || null
   const latitude = req.query.latitude || null
-  const distance = req.query.distance || 1
+  const distance = req.query.distance || null
   const limit = req.query.limit || 1000
   const page = req.query.page || 1
   const sort = req.query.sort || 'id'
   const direction = req.query.direction || 'asc'
 
   let stops = await stopModel.getStops(
-    organisationIds,
+    localAuthorityIds,
     mobileIds,
     routeIds,
-    serviceCodes,
+    localAuthorityCodes,
     longitude,
     latitude,
     distance,
@@ -85,7 +91,10 @@ router.get('/:id', cache(3600), function (req, res, next) {
 
 router.get('/:id/pdf', cache(3600), function (req, res, next) {
   stopModel.getStopPdfById(req.params.id).then(doc => {
-    res.setHeader('Content-type', 'application/pdf')
+    if (!doc) {
+      return res.status(404).json({ errors: [{ status: '404', title: 'Not Found' }] })
+    }
+    res.setHeader('Content-Type', 'application/pdf')
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' + req.params.id + '.pdf'
@@ -108,7 +117,10 @@ router.get('/:id/pdf', cache(3600), function (req, res, next) {
 
 router.get('/:id/ics', cache(3600), function (req, res, next) {
   stopModel.getStopCalendarById(req.params.id).then(calendar => {
-    res.setHeader('Content-type', 'text/calendar')
+    if (!calendar) {
+      return res.status(404).json({ errors: [{ status: '404', title: 'Not Found' }] })
+    }
+    res.setHeader('Content-Type', 'text/calendar')
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' + req.params.id + '.ics'
