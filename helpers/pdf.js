@@ -1,3 +1,4 @@
+const path = require('path')
 const PdfPrinter = require('pdfmake')
 
 const styles = {
@@ -47,13 +48,20 @@ const tableLayouts = {
   }
 }
 
+// Resolve Roboto font files robustly relative to typeface-roboto package location
+let robotoDir
+try {
+  robotoDir = path.dirname(require.resolve('typeface-roboto/package.json'))
+} catch (e) {
+  robotoDir = path.join(__dirname, '../node_modules/typeface-roboto')
+}
+
 const fonts = {
   Roboto: {
-    normal: './node_modules/typeface-roboto/files/roboto-latin-400.woff',
-    bold: './node_modules/typeface-roboto/files/roboto-latin-500.woff',
-    italics: './node_modules/typeface-roboto/files/roboto-latin-400italic.woff',
-    bolditalics:
-      './node_modules/typeface-roboto/files/roboto-latin-500italic.woff'
+    normal: path.join(robotoDir, 'files/roboto-latin-400.woff'),
+    bold: path.join(robotoDir, 'files/roboto-latin-500.woff'),
+    italics: path.join(robotoDir, 'files/roboto-latin-400italic.woff'),
+    bolditalics: path.join(robotoDir, 'files/roboto-latin-500italic.woff')
   }
 }
 
@@ -61,14 +69,15 @@ const printer = new PdfPrinter(fonts)
 
 module.exports.createPDFStream = definition => {
   let pdf = null
-
   definition.styles = styles
 
   try {
     pdf = printer.createPdfKitDocument(definition, {
       tableLayouts: tableLayouts
     })
-  } catch (e) {}
+  } catch (e) {
+    console.error('Error creating PDF document:', e)
+  }
 
   return pdf
 }

@@ -5,8 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "node test/test_api.js",
-    "quick-build": "npm run build"
+    "test": "node test/test_api.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "repository": {
     "type": "git",

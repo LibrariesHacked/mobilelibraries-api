@@ -1,5 +1,4 @@
 const ical = require('ical-generator') // For generating the event
-
 const icalJs = require('ical.js') // For parsing the recur rule
 
 const prod = {
@@ -12,9 +11,6 @@ const timezone = 'Europe/London'
 ical().timezone(timezone)
 
 module.exports.createCalendar = data => {
-  // The recur object using ical.js
-  const recur = new icalJs.Recur.fromString(data.rrule) // eslint-disable-line
-
   // The calendar using ical-generator
   const cal = ical({ domain: 'mobilelibraries.org', name: data.name })
   cal.prodId(prod)
@@ -27,6 +23,7 @@ module.exports.createCalendar = data => {
     description: data.description,
     url: data.url
   })
+
   if (data.location) {
     if (data.latitude != null && data.longitude != null) {
       event.location({
@@ -40,12 +37,24 @@ module.exports.createCalendar = data => {
       event.location(data.location)
     }
   }
+
   if (data.rrule) {
-    event.repeating({
-      freq: recur.freq,
-      interval: recur.interval,
-      until: recur.until.toString()
-    })
+    try {
+      const recur = new icalJs.Recur.fromString(data.rrule)
+      const repeatingConfig = {
+        freq: recur.freq,
+        interval: recur.interval
+      }
+      if (recur.until) {
+        repeatingConfig.until = recur.until.toString()
+      }
+      if (recur.count) {
+        repeatingConfig.count = recur.count
+      }
+      event.repeating(repeatingConfig)
+    } catch (e) {
+      console.error('Error parsing rrule in createCalendar:', e.message)
+    }
   }
 
   return cal.toString()

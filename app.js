@@ -25,6 +25,10 @@ app.use(function (req, res, next) {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   )
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200)
+  }
   next()
 })
 
@@ -54,12 +58,35 @@ app.use('/api', (req, res) => {
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions))
 
+// Global error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled API Error:', err)
+  if (res.headersSent) {
+    return next(err)
+  }
+  res.status(err.status || 500).json({
+    errors: [
+      {
+        status: String(err.status || 500),
+        title: err.name || 'Internal Server Error',
+        detail: err.message || 'An unexpected error occurred'
+      }
+    ]
+  })
+})
+
 const port = process.env.PORT || 8080
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`Mobile libraries API running on port ${port}`)
-  })
+  if (typeof port === 'string' && port.startsWith('\\\\.\\pipe\\')) {
+    app.listen(port, () => {
+      console.log(`Mobile libraries API running on pipe ${port}`)
+    })
+  } else {
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`Mobile libraries API running on port ${port}`)
+    })
+  }
 }
 
 module.exports = app

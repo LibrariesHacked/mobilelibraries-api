@@ -8,7 +8,7 @@ const config = {
   host: process.env.PGHOST,
   database: process.env.PGDATABASE,
   password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
+  port: process.env.PGPORT ? parseInt(process.env.PGPORT, 10) : 5432,
   ssl: {
     rejectUnauthorized: false
   },
@@ -16,6 +16,11 @@ const config = {
   idleTimeoutMillis: 30000
 }
 
-var pool = new pg.Pool(config)
+const pool = new pg.Pool(config)
+
+// Prevent idle client errors from crashing the Node.js process
+pool.on('error', err => {
+  console.error('Unexpected error on idle PostgreSQL client:', err)
+})
 
 module.exports = pool

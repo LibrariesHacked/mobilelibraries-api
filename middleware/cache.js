@@ -17,7 +17,9 @@ const cache = duration => {
       res.sendResponse = res.send
       res.send = body => {
         const contentType = res.getHeader('Content-Type')
-        mcache.put(key, { body, contentType }, duration * 1000)
+        if (res.statusCode === 200) {
+          mcache.put(key, { body, contentType }, duration * 1000)
+        }
         res.sendResponse(body)
       }
       next()
