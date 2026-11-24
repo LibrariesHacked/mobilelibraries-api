@@ -1,4 +1,5 @@
-const ical = require('ical-generator') // For generating the event
+const icalGenerator = require('ical-generator')
+const ical = icalGenerator.default || icalGenerator
 const icalJs = require('ical.js') // For parsing the recur rule
 
 const prod = {
@@ -8,12 +9,12 @@ const prod = {
 }
 
 const timezone = 'Europe/London'
-ical().timezone(timezone)
 
 module.exports.createCalendar = data => {
   // The calendar using ical-generator
   const cal = ical({ domain: 'mobilelibraries.org', name: data.name })
   cal.prodId(prod)
+  cal.timezone(timezone)
 
   // The event details
   const event = cal.createEvent({
@@ -40,7 +41,7 @@ module.exports.createCalendar = data => {
 
   if (data.rrule) {
     try {
-      const recur = new icalJs.Recur.fromString(data.rrule)
+      const recur = icalJs.Recur.fromString(data.rrule)
       const repeatingConfig = {
         freq: recur.freq,
         interval: recur.interval

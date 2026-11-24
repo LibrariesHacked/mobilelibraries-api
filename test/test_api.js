@@ -190,6 +190,8 @@ async function runTests() {
       assert.strictEqual(res.headers.get('content-type'), 'application/pdf')
       const buf = await res.arrayBuffer()
       assert.ok(buf.byteLength > 100)
+      const magic = Buffer.from(buf).subarray(0, 4).toString('utf8')
+      assert.strictEqual(magic, '%PDF')
     })
 
     // 16. Stop iCalendar
@@ -199,6 +201,7 @@ async function runTests() {
       assert.ok(res.headers.get('content-type').includes('text/calendar'))
       const text = await res.text()
       assert.ok(text.includes('BEGIN:VCALENDAR'))
+      assert.ok(text.includes('VERSION:2.0'))
       assert.ok(text.includes('BEGIN:VEVENT'))
     })
 
@@ -258,7 +261,28 @@ async function runTests() {
       assert.ok(text.includes(sampleLa.name))
     })
 
-    // 22. 404 for removed legacy routes and non-existent resources
+    // 22. POST /api/schema rejects invalid non-array payload
+    await check('POST /api/schema rejects non-array payload with 400', async () => {
+      const res = await fetch(`${baseUrl}/api/schema`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invalid: 'object' })
+      })
+      assert.strictEqual(res.status, 400)
+      const data = await res.json()
+      assert.ok(data.errors)
+      assert.strictEqual(data.errors[0].status, '400')
+    })
+
+    // 23. CORS preflight OPTIONS request
+    await check('OPTIONS /api/stops returns 200 and CORS headers', async () => {
+      const res = await fetch(`${baseUrl}/api/stops`, { method: 'OPTIONS' })
+      assert.strictEqual(res.status, 200)
+      assert.strictEqual(res.headers.get('access-control-allow-origin'), '*')
+      assert.ok(res.headers.get('access-control-allow-methods').includes('GET'))
+    })
+
+    // 24. 404 for removed legacy routes and non-existent resources
     await check('GET /api/organisations returns 404 (removed for breaking change)', async () => {
       const res = await fetch(`${baseUrl}/api/organisations`)
       assert.strictEqual(res.status, 404)

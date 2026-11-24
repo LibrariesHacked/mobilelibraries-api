@@ -1,5 +1,5 @@
 const path = require('path')
-const PdfPrinter = require('pdfmake')
+const pdfmake = require('pdfmake')
 
 const styles = {
   header: {
@@ -65,19 +65,20 @@ const fonts = {
   }
 }
 
-const printer = new PdfPrinter(fonts)
+pdfmake.setFonts(fonts)
+pdfmake.setUrlAccessPolicy(() => true)
+pdfmake.setLocalAccessPolicy(() => true)
 
-module.exports.createPDFStream = definition => {
-  let pdf = null
+module.exports.createPDFStream = async definition => {
   definition.styles = styles
 
   try {
-    pdf = printer.createPdfKitDocument(definition, {
+    const doc = pdfmake.createPdf(definition, {
       tableLayouts: tableLayouts
     })
+    return await doc.getStream()
   } catch (e) {
     console.error('Error creating PDF document:', e)
+    return null
   }
-
-  return pdf
 }

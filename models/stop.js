@@ -266,7 +266,7 @@ module.exports.getStopPdfById = async id => {
       }
 
       const definition = { content }
-      const stream = pdfHelper.createPDFStream(definition)
+      const stream = await pdfHelper.createPDFStream(definition)
       return stream
     } else {
       return null
