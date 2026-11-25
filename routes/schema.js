@@ -1,19 +1,24 @@
-const express = require('express')
+/**
+ * @file Routes for schema import and export conforming to schema.librarydata.uk/mobile-library-stops.json (v2.0.0).
+ * @module routes/schema
+ */
+
+import express from 'express'
+import { Parser } from '@json2csv/plainjs'
+import { parse as parseCsv } from 'csv-parse/sync'
+import cache from '../middleware/cache.js'
+import schemaModel from '../models/schema.js'
+
 const router = express.Router()
-const cache = require('../middleware/cache')
-const schema = require('../models/schema')
 
-const { Parser } = require('json2csv')
-const csvtojson = require('csvtojson')
-
-router.get('/', cache(3600), async (req, res) => {
+router.get('/', cache(3600), async (req, res, next) => {
   try {
-    const schemaData = await schema.getData()
+    const schemaData = await schemaModel.getData()
     const prefersCsv =
       req.query.format === 'csv' || req.get('Accept') === 'text/csv'
 
     if (prefersCsv) {
-      const fields = schema.getViewFields()
+      const fields = schemaModel.getViewFields()
       const parser = new Parser({ fields })
       res.setHeader('Content-Type', 'text/csv')
       res.send(parser.parse(schemaData))
@@ -22,21 +27,19 @@ router.get('/', cache(3600), async (req, res) => {
       res.json(schemaData)
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ errors: [{ status: '500', title: 'Internal Server Error' }] })
+    next(err)
   }
 })
 
-router.get('/:local_authority', cache(3600), async (req, res) => {
+router.get('/:local_authority', cache(3600), async (req, res, next) => {
   try {
     const localAuthority = req.params.local_authority
-    const schemaData = await schema.getData(localAuthority)
+    const schemaData = await schemaModel.getData(localAuthority)
     const prefersCsv =
       req.query.format === 'csv' || req.get('Accept') === 'text/csv'
 
     if (prefersCsv) {
-      const fields = schema.getViewFields()
+      const fields = schemaModel.getViewFields()
       const parser = new Parser({ fields })
       res.setHeader('Content-Type', 'text/csv')
       res.send(parser.parse(schemaData))
@@ -45,17 +48,31 @@ router.get('/:local_authority', cache(3600), async (req, res) => {
       res.json(schemaData)
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ errors: [{ status: '500', title: 'Internal Server Error' }] })
+    next(err)
   }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     let stopData = req.body
     if (req.is('text/csv') || typeof req.body === 'string') {
-      stopData = await csvtojson().fromString(req.body)
+      try {
+        stopData = parseCsv(req.body, {
+          columns: true,
+          skip_empty_lines: true,
+          trim: true
+        })
+      } catch (e) {
+        return res.status(400).json({
+          errors: [
+            {
+              status: '400',
+              title: 'Bad Request',
+              detail: `Invalid CSV syntax: ${e.message}`
+            }
+          ]
+        })
+      }
     }
     if (!Array.isArray(stopData)) {
       return res.status(400).json({
@@ -68,20 +85,11 @@ router.post('/', async (req, res) => {
         ]
       })
     }
-    await schema.createData(stopData)
+    await schemaModel.createData(stopData)
     res.status(201).json({ rows: stopData.length })
   } catch (err) {
-    console.error(err)
-    res.status(500).json({
-      errors: [
-        {
-          status: '500',
-          title: 'Error processing schema data',
-          detail: err.message
-        }
-      ]
-    })
+    next(err)
   }
 })
 
-module.exports = router
+export default router

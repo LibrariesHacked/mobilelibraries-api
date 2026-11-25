@@ -14,7 +14,7 @@ Interactive Swagger/OpenAPI documentation is available at the root URL `/` and r
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18+)
+- [Node.js](https://nodejs.org/) (v20+)
 - PostgreSQL with [PostGIS](https://postgis.net/) extension installed (database populated via `mobilelibraries-database`)
 
 ### Configuration
@@ -43,6 +43,13 @@ npm start
 ```
 
 The API will start at `http://localhost:8080`.
+
+### Running Tests and Linting
+
+```bash
+npm test
+npm run lint
+```
 
 ---
 

@@ -1,18 +1,24 @@
-const express = require('express')
-const router = express.Router()
-const cache = require('../middleware/cache')
-const localAuthorityModel = require('../models/localAuthority')
+/**
+ * @file Routes for local authorities operating mobile libraries.
+ * @module routes/localAuthorities
+ */
 
-router.get('/', cache(3600), async (req, res) => {
+import express from 'express'
+import cache from '../middleware/cache.js'
+import localAuthorityModel from '../models/localAuthority.js'
+
+const router = express.Router()
+
+router.get('/', cache(3600), async (req, res, next) => {
   try {
     const auths = await localAuthorityModel.getLocalAuthorities()
     res.json(auths)
   } catch (err) {
-    res.status(500).json({ errors: [{ status: '500', title: 'Internal Server Error' }] })
+    next(err)
   }
 })
 
-router.get('/:id', cache(3600), async (req, res) => {
+router.get('/:id', cache(3600), async (req, res, next) => {
   try {
     const auth = await localAuthorityModel.getLocalAuthorityById(req.params.id)
     if (auth != null) {
@@ -23,8 +29,8 @@ router.get('/:id', cache(3600), async (req, res) => {
       })
     }
   } catch (err) {
-    res.status(500).json({ errors: [{ status: '500', title: 'Internal Server Error' }] })
+    next(err)
   }
 })
 
-module.exports = router
+export default router

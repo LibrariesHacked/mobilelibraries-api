@@ -2,10 +2,13 @@
   "name": "mobilelibraries-api",
   "version": "1.0.0",
   "description": "This is an API to expose mobile library data",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "node test/test_api.js"
+    "test": "node --test test/test_api.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -21,18 +24,17 @@
   },
   "homepage": "https://github.com/LibrariesHacked/mobilelibraries-api#readme",
   "dependencies": {
-    "body-parser": "^2.4.0",
-    "csvtojson": "^2.0.14",
-    "dotenv": "^18.0.10",
+    "@json2csv/plainjs": "^7.0.8",
+    "csv-parse": "^7.0.3",
     "express": "^5.3.0",
     "ical-generator": "^11.1.4",
-    "ical.js": "^2.2.1",
-    "json2csv": "^6.0.0-alpha.2",
-    "memory-cache": "^0.2.0",
-    "moment": "^2.31.0",
     "pdfmake": "^0.3.15",
     "pg": "^8.23.1",
-    "swagger-ui-express": "^5.0.1",
-    "typeface-roboto": "^1.1.13"
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.15.0",
+    "eslint-plugin-jsdoc": "^65.5.4",
+    "neostandard": "^0.14.1"
   }
 }
